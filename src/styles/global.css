@@ -1,0 +1,13 @@
+:root {
+  --bg: #222;
+  --fg: #f8f8f8;
+  --accent: #4cafef;
+}
+
+html,
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}

@@ -6,7 +6,17 @@
 //   });
 // }
 
-import './styles/global.css';
-import './components/GameRoot';
-import './components/TicTacToe';
-import './components/CellTile';
+// import './styles/global.css';
+// import './components/GameRoot';
+// import './components/TicTacToe';
+// import './components/CellTile';
+
+
+import './router';
+import './pages/Lobby/Lobby';
+import './pages/LevelSelect/LevelSelect';
+import './pages/Game/Game';
+
+// Inicializa en Lobby
+document.body.innerHTML = `<app-router></app-router>`;
+

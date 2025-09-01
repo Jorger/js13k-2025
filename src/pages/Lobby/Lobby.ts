@@ -1,34 +1,20 @@
-class LobbyPage extends HTMLElement {
-  template: HTMLTemplateElement;
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.template = document.createElement("template");
-    this.render()
-
-    this.shadowRoot!.appendChild(this.template.content.cloneNode(true));
-  }
-
-  render() {
-    this.template.innerHTML = /*html*/ `
-    <style>#toSelect {
-      color: red;
-    }</style>
-    <h1>Lobby</h1>
-    <button id="toSelect">Ir a selección de niveles</button>`;
-  }
-
+class Lobby extends HTMLElement {
   connectedCallback() {
-    this.shadowRoot!.querySelector("#toSelect")!.addEventListener(
-      "click",
-      () => {
-        window.dispatchEvent(
-          new CustomEvent("navigate", { detail: { page: "level-select" } })
-        );
-      }
-    );
+    this.innerHTML = `
+      <nav>Lobby</nav>
+      <h1>Bienvenido al Lobby</h1>
+      <button id="start">Ir a seleccionar nivel</button>
+    `;
+
+    const startBtn = this.querySelector<HTMLButtonElement>("#start");
+    startBtn?.addEventListener("click", () => {
+      window.dispatchEvent(
+        new CustomEvent("navigate", {
+          detail: { page: "level-select" },
+        })
+      );
+    });
   }
 }
 
-customElements.define("page-lobby", LobbyPage);
+customElements.define("app-lobby", Lobby);

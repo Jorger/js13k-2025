@@ -1,39 +1,61 @@
+import { BASE_HEIGHT, BASE_WIDTH, ROUTER_NAME } from "./utils/constants";
+
+type NavigateDetail = {
+  page: string;
+  params?: Record<string, any>;
+};
+
 class AppRouter extends HTMLElement {
-  currentPage: HTMLElement | null = null;
+  private currentPage: HTMLElement | null = null;
 
   connectedCallback() {
-    this.navigate("lobby");
-    window.addEventListener("navigate", ((e: CustomEvent) => {
-      this.navigate(e.detail.page, e.detail.props);
-    }) as EventListener);
+    this.navigate("game"); // Página por defecto
+
+    window.addEventListener("navigate", (e: Event) => {
+      const customEvent = e as CustomEvent<NavigateDetail>;
+      this.navigate(customEvent.detail.page, customEvent.detail.params);
+    });
+
+    window.addEventListener("resize", () => this.applyZoom());
+    this.applyZoom();
   }
 
-  navigate(page: string, props: Record<string, any> = {}) {
+  applyZoom() {
+    const zoomX = window.innerWidth / BASE_WIDTH;
+    const zoomY = window.innerHeight / BASE_HEIGHT;
+    const zoom = Math.min(zoomX, zoomY);
+
+    // Apply zoom directly
+    this.style.zoom = `${zoom}`;
+  }
+
+  private navigate(page: string, params: Record<string, any> = {}) {
     if (this.currentPage) {
       this.removeChild(this.currentPage);
     }
 
-    let el: HTMLElement;
+    let element: HTMLElement;
+
     switch (page) {
       case "lobby":
-        el = document.createElement("page-lobby");
+        element = document.createElement("app-lobby");
         break;
       case "level-select":
-        el = document.createElement("page-level-select");
+        element = document.createElement("app-level-select");
         break;
       case "game":
-        el = document.createElement("page-game");
-        Object.keys(props).forEach((key) => {
-          el.setAttribute(key, props[key]);
-        });
+        element = document.createElement("app-game");
+        if (params.level) {
+          element.setAttribute("level", String(params.level));
+        }
         break;
       default:
-        el = document.createElement("page-lobby");
+        element = document.createElement("app-lobby");
     }
 
-    this.currentPage = el;
-    this.appendChild(el);
+    this.appendChild(element);
+    this.currentPage = element;
   }
 }
 
-customElements.define("app-router", AppRouter);
+customElements.define(ROUTER_NAME, AppRouter);

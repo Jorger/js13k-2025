@@ -1,22 +1,12 @@
-// import "./components/GameRoot";
-
-// if (import.meta.hot) {
-//   import.meta.hot.accept(() => {
-//     // HMR placeholder – Vite handles module updates live
-//   });
-// }
-
-// import './styles/global.css';
-// import './components/GameRoot';
-// import './components/TicTacToe';
-// import './components/CellTile';
-
-
-import './router';
-import './pages/Lobby/Lobby';
-import './pages/LevelSelect/LevelSelect';
-import './pages/Game/Game';
+import "./global.css";
+import "./pages/Game/Game";
+import "./pages/LevelSelect/LevelSelect";
+import "./pages/Lobby/Lobby";
+import "./router";
+import "./utils/cssVariables";
+import "./pages/Game/components/grid";
+// import "./pages/Game/components/title";
+import { ROUTER_NAME } from "./utils/constants";
 
 // Inicializa en Lobby
-document.body.innerHTML = `<app-router></app-router>`;
-
+document.body.innerHTML = `<${ROUTER_NAME} class='df jc ai'></${ROUTER_NAME}>`;

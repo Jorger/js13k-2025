@@ -1,0 +1,193 @@
+.gg {
+  --sg: calc(var(--si) / 2);
+  border: 5px solid #000;
+  position: relative;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.tile {
+  height: var(--si);
+  position: absolute;
+  width: var(--si);
+  z-index: 1;
+
+  /* border: 1px solid red; */
+}
+
+.tile-0 {
+  --sg: calc(var(--si) / 2);
+  --c1: #c098ff;
+  --c2: #9177e7;
+  box-shadow: -12px 11px 5px rgba(0, 0, 0, 0.4);
+  /* background: var(--g), var(--g) var(--sg) var(--sg) var(--c2);
+  background-size: calc(2 * var(--sg)) calc(2 * var(--sg)); */
+}
+
+/* Coin */
+.tile-1 {
+  /* border-radius: 50%; */
+
+  /* border: 2px solid black; */
+  /* background: #000; */
+  /* border: 1px solid white; */
+  /* border-radius: 50%; */
+  -webkit-transform-style: preserve-3d;
+  animation: spin 5s linear infinite;
+
+  /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; */
+
+  &::after,
+  &::before {
+    content: "";
+    width: 70%;
+    height: 70%;
+    background: black;
+    left: 15%;
+    top: 15%;
+    position: absolute;
+    /* transform: rotateY(-10deg);
+    transform-origin: 100% 50%; */
+  }
+
+  &::after {
+    background: #f5c101;
+    width: 50%;
+    height: 50%;
+    left: 25%;
+    top: 25%;
+
+    background-image: linear-gradient(#feec01, #feec01),
+      linear-gradient(#fefeaa, #fefeaa), linear-gradient(#fefeaa, #fefeaa),
+      linear-gradient(#feec01, #feec01), linear-gradient(#feec01, #feec01);
+    background-repeat: no-repeat;
+    background-size: 25% 75%, 100% 25%, 25% 100%, 50% 25%, 75% 25%;
+    background-position: 0 0, 25% 0, 100% 0, 0 75%, 75% 100%;
+
+    /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+      rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
+  }
+
+  &::before {
+    /* border-radius: 5px; */
+    box-shadow: -12px 11px 5px #00000087;
+  }
+}
+
+/* SPIKE */
+.tile-2 {
+  background-image: linear-gradient(#121125, #121125),
+    linear-gradient(#aba9cf, #aba9cf), linear-gradient(#121125, #121125),
+    linear-gradient(#aba9cf, #aba9cf), linear-gradient(#121125, #121125),
+    linear-gradient(#aba9cf, #aba9cf), linear-gradient(#121125, #121125),
+    linear-gradient(#aba9cf, #aba9cf);
+
+  background-repeat: no-repeat;
+  background-size: 20% 10%;
+  background-position: 10% 10%, 10% 20%, 85% 10%, 85% 20%, 10% 80%, 10% 90%,
+    85% 80%, 85% 90%;
+}
+
+/* 
+.tile-1:before {
+  background-color: #ff9900;
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+  height: 10em;
+  width: 10em;
+  -webkit-transform: translateZ(-0.75em);
+}
+
+.tile-1:after {
+  background-color: #ff9900;
+  content: "";
+  left: 4.25em;
+  position: absolute;
+  height: 10em;
+  width: 0.75em;
+  z-index: -10;
+  -webkit-transform: rotateY(-90deg);
+  -webkit-transform-origin: 100% 50%;
+} */
+
+/* .tile-s {
+  box-shadow: -12px 11px 5px #00000087;
+} */
+
+.cat {
+  height: var(--si);
+  position: absolute;
+  width: var(--si);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  /* box-shadow: -12px 11px 5px #00000087; */
+
+  --b-cat: black;
+  --o-cat: #f6ba00;
+  --ey-cat: #ffff91;
+  --p-cat: #ffa4e1;
+  --w-cat: white;
+  --y-cat: #ffe901;
+
+  --left-eye: linear-gradient(var(--b-cat), var(--b-cat));
+  --right-eye: linear-gradient(var(--b-cat), var(--b-cat));
+
+  --eye-size: 10% 25%;
+  --eyelid-size: 37% 0;
+
+  --left-eye-position: 15% 67%;
+  --right-eye-position: 85% 67%;
+  --left-eyelid-position: 0px 67%;
+  --right-eyelid-position: 100% 67%;
+
+  --cat-face: 
+  /* Bloque izquierdo */ linear-gradient(
+      var(--o-cat),
+      var(--o-cat)
+    ),
+    /* Bloque Derecho */ linear-gradient(var(--o-cat), var(--o-cat)),
+    /* Nariz */ linear-gradient(var(--y-cat), var(--y-cat)),
+    /* Ojo izquerdo */ var(--left-eye),
+    /* parpado izquierdo */ linear-gradient(var(--ey-cat), var(--ey-cat)),
+    /* Ojo Derecho */ var(--right-eye),
+    /* parpado derecho */ linear-gradient(var(--ey-cat), var(--ey-cat)),
+    /* Boca */ linear-gradient(var(--p-cat), var(--p-cat)),
+    /* Base blanca  */ linear-gradient(var(--w-cat), var(--w-cat));
+
+  --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
+    var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
+
+  --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
+    var(--left-eyelid-position), var(--right-eye-position),
+    var(--right-eyelid-position), center 71%, 0 100%;
+
+  background-color: var(--y-cat);
+  background-image: var(--cat-face);
+  background-repeat: no-repeat;
+  background-size: var(--cat-size);
+  background-position: var(--cat-position);
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+}
+
+.cat-black {
+  --y-cat: rgb(53, 51, 51);
+  --o-cat: black;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}

@@ -1,66 +1,76 @@
-class GamePage extends HTMLElement {
-  template: HTMLTemplateElement;
-  level: string | null = null;
-  value: number;
+// import "./styles.css";
+import { setHtml } from "../../utils/helpers";
+import { getLevel } from "../../levels";
+import { Level } from "../../interfaces";
+// import template from "./template.html?raw";
 
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.template = document.createElement("template");
-    this.value = 0;
-    this.render()
-    this.shadowRoot!.appendChild(this.template.content.cloneNode(true));
-  }
-
-  render() {
-    this.template.innerHTML = /*html*/ `
-    <style>
-      @import "./styles.css";
-    </style>
-    <h1 id="title">Game</h1>
-    <button id="back">Volver al Lobby</button>
-    <button id="restart">Reiniciar</button>
-    <button id="counter">0</button>`;
-  }
-
+class Game extends HTMLElement {
   static get observedAttributes() {
-    return ['level'];
+    return ["level"];
   }
 
-  attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
-    if (name === 'level') {
-      this.level = newVal;
-      this.updateTitle();
+  private level: number = 0;
+  private gameSate: Level | null = null;
+
+  // attributeChangedCallback(name: string, _: string, newValue: string) {
+  //   if (name === "level") {
+  //     this.level = parseInt(newValue, 10) || 0;
+  //     this.render();
+  //   }
+  // }
+
+  connectedCallback() {
+    const attrLevel = this.getAttribute("level");
+    this.level = attrLevel ? parseInt(attrLevel, 10) : 0;
+    this.render();
+  }
+
+  private render() {
+    // console.log(this.level);
+    // this.gameSate = getLevel(this.level);
+    this.gameSate = getLevel(2);
+
+    console.log(this.gameSate);
+
+    // size="20"
+    setHtml(
+      this,
+      /*html*/ `<div class="df jc ai wi he"><grid-game></grid-game></div>`
+    );
+
+    const grid = this.querySelector("grid-game") as any;
+
+    if (grid) {
+      grid.levelData = this.gameSate;
     }
-  }
 
-  async connectedCallback() {
-    this.shadowRoot!.querySelector('#back')!.addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: { page: 'lobby' } }));
-    });
-
-    this.shadowRoot!.querySelector('#restart')!.addEventListener('click', () => {
-      // Reinicia la misma página con el mismo nivel
-      window.dispatchEvent(new CustomEvent('navigate', { detail: { page: 'game', props: { level: this.level } } }));
-    });
-
-
-    const counterButton = this.shadowRoot!.querySelector('#counter');
-
-    counterButton!.addEventListener('click', () => {
-      this.value++;
-      counterButton!.textContent = `${this.value}`;
-    });
-
-
-    this.updateTitle();
-  }
-
-  updateTitle() {
-    if (this.level) {
-      this.shadowRoot!.querySelector('#title')!.textContent = `Game - Nivel ${this.level}`;
-    }
+    // const backBtn = this.querySelector<HTMLButtonElement>("#back");
+    // backBtn?.addEventListener("click", () => {
+    //   window.dispatchEvent(
+    //     new CustomEvent("navigate", {
+    //       detail: { page: "level-select" },
+    //     })
+    //   );
+    // });
   }
 }
 
-customElements.define('page-game', GamePage);
+customElements.define("app-game", Game);
+
+/*
+
+*/
+
+// const nextBtn = document.createElement("button");
+// nextBtn.textContent = "Siguiente nivel";
+// nextBtn.addEventListener("click", () => {
+//   this.level++;
+//   this.gameSate = getLevel(this.level);
+
+//   const grid = this.querySelector("grid-game") as any;
+//   if (grid) {
+//     grid.levelData = this.gameSate; // 👈 se vuelve a disparar render() en GridGame
+//   }
+// });
+
+// this.appendChild(nextBtn);

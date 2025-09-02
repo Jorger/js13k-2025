@@ -1,7 +1,7 @@
-import { ECatColor, ETiles } from "../utils/constants";
+import { ECatColor, EDirections, ETiles } from "../utils/constants";
 
 export type TCatColor = keyof typeof ECatColor;
-export type SwipeDirection = "up" | "down" | "left" | "right" | null;
+// export type SwipeDirection = keyof typeof EDirections;
 // export type TETiles = keyof typeof ETiles;
 
 export interface coordinate {
@@ -12,11 +12,21 @@ export interface coordinate {
 export interface Cat {
   color: TCatColor;
   position: coordinate;
+  move?: boolean;
+  destroy?: boolean;
 }
+
+export type CatElemet = Record<TCatColor, HTMLButtonElement | null>;
+
+// export type IIncreaseValue = Record<SwipeDirection, coordinate>;
 
 export interface Tiles {
   type: ETiles;
   position: coordinate;
+  delay?: number;
+  hide?: boolean;
+  close?: boolean;
+  destroy?: boolean;
 }
 
 export interface Level {

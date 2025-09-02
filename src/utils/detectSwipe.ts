@@ -1,12 +1,10 @@
-// import { $on } from "./helpers";
-
+// import type { SwipeDirection } from "../interfaces";
+import { EDirections } from "./constants";
 import { $on } from "./helpers";
-
-type SwipeDirection = "up" | "down" | "left" | "right" | null;
 
 interface SwipeOptions {
   threshold?: number; // Distancia mínima para considerar swipe
-  onSwipe: (direction: SwipeDirection) => void;
+  onSwipe: (direction: EDirections) => void;
 }
 
 export function detectSwipe(element: HTMLElement, options: SwipeOptions) {
@@ -27,19 +25,20 @@ export function detectSwipe(element: HTMLElement, options: SwipeOptions) {
     const dx = x - startX;
     const dy = y - startY;
 
-    let direction: SwipeDirection = null;
+    let direction = -1;
 
     if (Math.abs(dx) > Math.abs(dy)) {
       if (Math.abs(dx) > threshold) {
-        direction = dx > 0 ? "right" : "left";
+        direction = dx > 0 ? 3 : 2;
       }
     } else {
       if (Math.abs(dy) > threshold) {
-        direction = dy > 0 ? "down" : "up";
+        direction = dy > 0 ? 1 : 0;
       }
     }
 
-    if (direction) options.onSwipe(direction);
+    if (direction >= 0) options.onSwipe(direction);
+
     isMouseDown = false;
   };
 

@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => ({
       module: true,
       compress: {
         passes: 3,
+        // TODO: poner en true
         drop_console: true,
         drop_debugger: true,
         booleans_as_integers: true,

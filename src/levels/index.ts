@@ -49,19 +49,20 @@ const getTiles = (width = 0, height = 0, tiles: Tiles[]) => {
   for (let y = 0; y < height; y++) {
     // for (let x = 0; x < width; x++) {
     for (let x = width - 1; x >= 0; x--) {
-      const existTile = tiles.find(
+      const existTile = tiles.filter(
         (v) => v.position.x === x && v.position.y === y
       );
 
-      if (
-        y === 0 ||
-        y === height - 1 ||
-        x === 0 ||
-        x === width - 1 ||
-        existTile
-      ) {
+      if (existTile.length !== 0) {
+        for (const tile of existTile) {
+          newTiles.push({
+            type: tile.type,
+            position: { x, y },
+          });
+        }
+      } else if (y === 0 || y === height - 1 || x === 0 || x === width - 1) {
         newTiles.push({
-          type: existTile?.type || ETiles.BRICK,
+          type: ETiles.BRICK,
           position: { x, y },
         });
       }

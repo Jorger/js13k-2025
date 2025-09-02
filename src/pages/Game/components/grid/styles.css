@@ -2,6 +2,7 @@
   --sg: calc(var(--si) / 2);
   border: 5px solid #000;
   position: relative;
+  /* Podria no dejarlo */
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
@@ -10,7 +11,8 @@
   height: var(--si);
   position: absolute;
   width: var(--si);
-  z-index: 1;
+  /* z-index: 1; */
+  pointer-events: none;
 
   /* border: 1px solid red; */
 }
@@ -25,15 +27,18 @@
 }
 
 /* Coin */
-.tile-1 {
+.tile-1,
+.tile-3 {
   /* border-radius: 50%; */
 
   /* border: 2px solid black; */
   /* background: #000; */
   /* border: 1px solid white; */
   /* border-radius: 50%; */
-  -webkit-transform-style: preserve-3d;
-  animation: spin 5s linear infinite;
+  /* -webkit-transform-style: preserve-3d; */
+  /* animation-direction: reverse; */
+  
+
 
   /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; */
 
@@ -46,6 +51,7 @@
     left: 15%;
     top: 15%;
     position: absolute;
+    animation: spin 3s linear infinite;
     /* transform: rotateY(-10deg);
     transform-origin: 100% 50%; */
   }
@@ -89,6 +95,68 @@
     85% 80%, 85% 90%;
 }
 
+.tile-1.coin {
+  /* border: 2px solid black; */
+   animation: coinPickup 0.5s ease-out forwards;
+}
+
+/* Key */
+.tile-3 {
+  filter: hue-rotate(145deg);
+}
+
+/* GATES */
+.tile-4 {
+  background: #242026;
+
+  background-image: linear-gradient(#fffdff, #fffdff), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026),
+  linear-gradient(#009dff, #009dff),
+    linear-gradient(#00cefb, #00cefb), linear-gradient(#0076ed, #0076ed), linear-gradient(#049dff, #049dff);
+  background-repeat: no-repeat;
+  background-size: 15% 15%, 40% 13%, 40% 13%, 13% 50%, 13% 50%, 35% 35%, 35% 35%, 35% 35%, 35% 35%;
+  background-position: 85% 15%, 50% 25%, 50% 70%, 32% 45%, 68% 45%, 24% 20%, 78% 20%, 24% 73%, 78% 73%;
+  box-shadow: -12px 11px 5px rgba(0, 0, 0, 0.4);
+}
+
+.tile-4.open {
+  filter: hue-rotate(280deg);
+}
+
+/* Box */
+.tile-5 {
+  /* border: 1px solid red; */
+
+  &::after,
+  &::before {
+    content: "";
+    background-color: #fee4c9;
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    background-image: linear-gradient(#fec2b1, #fec2b1);
+    background-repeat: no-repeat;
+    background-size: 60% 60%;
+    background-position: 0 100%;
+  }
+
+  &::after {
+    background-color: #eaa0a2;
+    width: 60%;
+    height: 55%;
+    left: 20%;
+    top: 20%;
+    box-shadow:none;
+    background-image: linear-gradient(#b9687b, #b9687b), linear-gradient(#b9687b, #b9687b), linear-gradient(#b9687b, #b9687b);
+    background-size: 25% 25%;
+    background-position: 0 0, 100% 0, 100% 100%;
+  }
+  /* background: red; */
+}
+
 /* 
 .tile-1:before {
   background-color: #ff9900;
@@ -117,15 +185,22 @@
 } */
 
 .cat {
+  --pos: translate(var(--x), var(--y));
   height: var(--si);
   position: absolute;
   width: var(--si);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border: none;
+  transform: var(--pos);
+  /* animation: cat-blink 2s linear infinite; */
+  /* Moverlo a una variable */
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   /* box-shadow: -12px 11px 5px #00000087; */
+  /* z-index: 1; */
+
+  /* TODO revisar la velocidad */
 
   --b-cat: black;
   --o-cat: #f6ba00;
@@ -172,15 +247,26 @@
   background-size: var(--cat-size);
   background-position: var(--cat-position);
 
-  &:focus,
+  /* &:focus,
   &:active {
     outline: none;
-  }
+  } */
+
+  /*  */
 }
 
 .cat-black {
   --y-cat: rgb(53, 51, 51);
   --o-cat: black;
+}
+
+.cat.ani {
+  transition: transform 100ms ease-in-out;
+}
+
+.cat.explode,
+.tile-5.explode {
+  animation: explode 0.3s forwards;
 }
 
 @keyframes spin {
@@ -191,3 +277,104 @@
     transform: rotateY(360deg);
   }
 }
+
+@keyframes coinPickup {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+    scale: 1;
+  }
+  50% {
+    transform: translateY(-20px);
+    opacity: 0.7;
+    scale: 1.1;
+  }
+  100% {
+    transform: translateY(-50px);
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+
+@keyframes explode {
+  0% {
+    transform: var(--pos, translate(0, 0)) scale(1);
+    filter: blur(0px);
+    opacity: 1;
+  }
+  40% {
+    transform: var(--pos, translate(0, 0)) scale(1.3);
+    filter: blur(4px);
+    opacity: 0.9;
+  }
+  70% {
+    transform: var(--pos, translate(0, 0)) scale(0.7);
+    filter: blur(8px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: var(--pos, translate(0, 0)) scale(1.5);
+    filter: blur(15px);
+    opacity: 0;
+  }
+}
+
+/* @keyframes cat-blink {
+  95% {
+    --eye-size: 10% 25%;
+    --eyelid-size: 37% 0;
+
+    --left-eye-position: 15% 67%;
+    --right-eye-position: 85% 67%;
+    --left-eyelid-position: 0px 67%;
+    --right-eyelid-position: 100% 67%;
+
+    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
+      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
+
+    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
+      var(--left-eyelid-position), var(--right-eye-position),
+      var(--right-eyelid-position), center 71%, 0 100%;
+
+    background-size: var(--cat-size);
+    background-position: var(--cat-position);
+  }
+  97% {
+    --eye-size: 10% 10%;
+    --eyelid-size: 37% 15%;
+
+    --left-eye-position: 15% 73%;
+    --right-eye-position: 85% 73%;
+    --left-eyelid-position: 0px 60%;
+    --right-eyelid-position: 100% 60%;
+
+    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
+      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
+
+    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
+      var(--left-eyelid-position), var(--right-eye-position),
+      var(--right-eyelid-position), center 71%, 0 100%;
+
+    background-size: var(--cat-size);
+    background-position: var(--cat-position);
+  }
+  99% {
+    --eye-size: 10% 0;
+    --eyelid-size: 37% 25%;
+
+    --left-eye-position: 15% 67%;
+    --right-eye-position: 85% 67%;
+    --left-eyelid-position: 0px 67%;
+    --right-eyelid-position: 100% 67%;
+
+    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
+      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
+
+    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
+      var(--left-eyelid-position), var(--right-eye-position),
+      var(--right-eyelid-position), center 71%, 0 100%;
+
+    background-size: var(--cat-size);
+    background-position: var(--cat-position);
+  }
+} */

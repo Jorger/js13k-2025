@@ -1,8 +1,12 @@
-export const $ = document.querySelector.bind(document);
-export const $$ = document.querySelectorAll.bind(document);
+// export const $ = document.querySelector.bind(document);
+// export const $$ = document.querySelectorAll.bind(document);
 
 export const qs = (target: HTMLElement, query = "") => {
   return target.querySelector(query);
+};
+
+export const qsa = (target: HTMLElement, query = "") => {
+  return target.querySelectorAll(query);
 };
 
 export const $on = (

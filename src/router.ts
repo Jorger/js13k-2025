@@ -9,13 +9,15 @@ class AppRouter extends HTMLElement {
   private currentPage: HTMLElement | null = null;
 
   connectedCallback() {
-    this.navigate("game"); // Página por defecto
+    this.navigate("lobby"); // Página por defecto
 
     window.addEventListener("navigate", (e: Event) => {
       const customEvent = e as CustomEvent<NavigateDetail>;
       this.navigate(customEvent.detail.page, customEvent.detail.params);
     });
 
+
+    document.addEventListener("contextmenu", (e) => e.preventDefault(), false);
     window.addEventListener("resize", () => this.applyZoom());
     this.applyZoom();
   }

@@ -1,19 +1,26 @@
+import "./styles.css";
+import { $on, qs, setHtml } from "../../utils/helpers";
+import { getTotalLevels } from "../../levels";
+import template from "./template.html?raw";
+
+const TOTAL_LEVELS = getTotalLevels();
+
 class Lobby extends HTMLElement {
   connectedCallback() {
-    this.innerHTML = `
-      <nav>Lobby</nav>
-      <h1>Bienvenido al Lobby</h1>
-      <button id="start">Ir a seleccionar nivel</button>
-    `;
+    this.innerHTML = template;
+    const startBtn = qs(this, "button") as HTMLElement;
+    const labelLevel = qs(this, '.lob-l span') as HTMLElement;
+    // TODO: leer valor de localStorage
+    const completedLevel = 1;
+    setHtml(labelLevel, `${completedLevel}/${TOTAL_LEVELS}`);
 
-    const startBtn = this.querySelector<HTMLButtonElement>("#start");
-    startBtn?.addEventListener("click", () => {
+    $on(startBtn, "click", () => 
       window.dispatchEvent(
         new CustomEvent("navigate", {
           detail: { page: "level-select" },
         })
-      );
-    });
+      )
+    );
   }
 }
 

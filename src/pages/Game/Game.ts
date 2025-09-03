@@ -1,7 +1,7 @@
 // import "./styles.css";
-import { setHtml } from "../../utils/helpers";
 import { getLevel } from "../../levels";
 import { Level } from "../../interfaces";
+import { setHtml } from "../../utils/helpers";
 // import template from "./template.html?raw";
 
 class Game extends HTMLElement {
@@ -27,8 +27,8 @@ class Game extends HTMLElement {
 
   private render() {
     // console.log(this.level);
-    // this.gameSate = getLevel(this.level);
-    this.gameSate = getLevel(18);
+    this.gameSate = getLevel(this.level);
+    // this.gameSate = getLevel(18);
 
     console.log(this.gameSate);
 

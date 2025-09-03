@@ -28,7 +28,7 @@ class Game extends HTMLElement {
   private render() {
     // console.log(this.level);
     // this.gameSate = getLevel(this.level);
-    this.gameSate = getLevel(6);
+    this.gameSate = getLevel(18);
 
     console.log(this.gameSate);
 

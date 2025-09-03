@@ -44,6 +44,12 @@ export const removeClass = (target: HTMLElement, className = "") => {
 export const hasClass = (target: HTMLElement, className = "") =>
   target.classList.contains(className);
 
+export const setCssVariable = (
+  target: HTMLElement,
+  variable = "",
+  value = ""
+) => target.style.setProperty(`--${variable}`, value);
+
 // export const addStyle = (
 //   target: null | HTMLElement,
 //   styles: Record<string, string>

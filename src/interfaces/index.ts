@@ -1,4 +1,4 @@
-import { ECatColor, EDirections, ETiles } from "../utils/constants";
+import { ECatColor, ETiles } from "../utils/constants";
 
 export type TCatColor = keyof typeof ECatColor;
 // export type SwipeDirection = keyof typeof EDirections;
@@ -25,7 +25,7 @@ export interface Tiles {
   position: coordinate;
   delay?: number;
   hide?: boolean;
-  close?: boolean;
+  open?: boolean;
   destroy?: boolean;
 }
 
@@ -34,6 +34,11 @@ export interface Level {
   height: number;
   cats: Cat[];
   tiles: Tiles[];
+}
+
+export interface IBoardKeys {
+  total: number;
+  collected: number;
 }
 
 // const tem: Level = {

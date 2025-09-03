@@ -1,26 +1,40 @@
+import "./styles.css";
+import { getTotalLevels } from "../../levels";
+import { $on, qs, qsa, setHtml } from "../../utils/helpers";
+import template from "./template.html?raw";
+
+const TOTAL_LEVELS = getTotalLevels();
+// const TOTAL_LEVELS = 40
+
 class LevelSelect extends HTMLElement {
   connectedCallback() {
-    this.innerHTML = `
-      <nav>Level Select</nav>
-      <h1>Selecciona un nivel</h1>
-      <div id="levels"></div>
-    `;
+    this.innerHTML = template;
 
-    const container = this.querySelector<HTMLDivElement>("#levels");
-    if (!container) return;
+    const container = qs(this, ".pag-c") as HTMLElement;
+    // console.log(container)
+    setHtml(container, this.renderLevels());
 
-    for (let i = 1; i <= 5; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = `Nivel ${i}`;
-      btn.addEventListener("click", () => {
+    qsa(this, ".button").forEach((button) => {
+      const numLevel = +button.textContent;
+      $on(button as HTMLElement, "click", () => {
+        console.log(numLevel);
         window.dispatchEvent(
           new CustomEvent("navigate", {
-            detail: { page: "game", params: { level: i } },
+            detail: { page: "game", params: { level: numLevel - 1 } },
           })
         );
       });
-      container.appendChild(btn);
-    }
+    });
+  }
+
+  renderLevels() {
+    return new Array(TOTAL_LEVELS)
+      .fill(null)
+      .map(
+        (_, index) =>
+          /*html*/ `<button class="button df jc ai">${index + 1}</button>`
+      )
+      .join("");
   }
 }
 

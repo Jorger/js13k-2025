@@ -1,8 +1,14 @@
 import { cloneDeep } from "../../../../utils/helpers";
-import { ECatColor, EDirections, ETiles, INCREASE_SWIPE } from "../../../../utils/constants";
+import {
+  ECatColor,
+  EDirections,
+  ETiles,
+  INCREASE_SWIPE,
+} from "../../../../utils/constants";
 import type {
   Cat,
   coordinate,
+  IBoardKeys,
   Level,
   TCatColor,
   Tiles,
@@ -54,183 +60,179 @@ export const calculatePosition = (position: coordinate, size = 0) => ({
   y: `${position.y * size}px`,
 });
 
+/**
+ * Retorna el listado de tiles dado el tipo del mismo
+ * @param type
+ * @param tiles
+ * @returns
+ */
+export const getTileByType = (type: ETiles, tiles: Tiles[]) =>
+  tiles.filter((v) => v.type === type);
+
+/**
+ * Valida si ya se han seleccionado todas las llaves...
+ * @param boardKeys
+ * @returns
+ */
+export const valiteCollectAllKeys = (boardKeys: IBoardKeys) =>
+  boardKeys.total === boardKeys.collected;
+
+
+// TODO, vlaidar que cuando ha recogido todas las monedas y pasa sobre spikes siga derecho
+
+/**
+ * Valida y ejecuta el movimiento de un gato en el tablero
+ * @param level      Estado actual del nivel.
+ * @param catColor   Color del gato a mover.
+ * @param dir        Dirección del movimiento.
+ * @param boardKeys  Estado de llaves recolectadas.
+ * @returns          { copyLevel, catMove } nivel actualizado y cantidad de pasos avanzados.
+ */
 export const validateMoveCat = (
   level: Level,
   catColor: TCatColor,
   dir: EDirections,
+  boardKeys: IBoardKeys
 ) => {
+  // Copia para no mutar el estado original
   const copyLevel = cloneDeep(level);
   const { width, height, cats, tiles } = copyLevel;
+
+  // Incremento de posición según la dirección
   const increase = INCREASE_SWIPE[dir];
+
+  // Contador de pasos avanzados en este "swipe"
   let catMove = 0;
 
-
-  console.log("en validateMoveCat")
-  console.log({level, catColor, dir});
-
-  console.log("increase: ", increase)
-  console.log("VALOR DE LA CONSTANTE ES: ", INCREASE_SWIPE)
-
-  /**
-   * El gato que se va a mover...
-   */
+  // Buscar el gato por color
   const indexCat = cats.findIndex((v) => v.color === catColor);
-  /**
-   * El gato opuesto
-   */
-  // const oppositeCat = cats.find(
-  //   (v) =>
-  //     v.color ===
-  //     (catColor === ECatColor.BLACK ? ECatColor.YELLOW : ECatColor.BLACK)
-  // );
 
-  console.log("indexCat: ", { indexCat });
-
-  if (indexCat >= 0) {
-    // const { position } = cat;
-    // const newPosition = cloneDeep(cat.position);
-
-    // // DO
-    // newPosition.x += increase.x;
-    // newPosition.y += increase.y;
-
-    do {
-      // debugger;
-      const newPosition = {
-        x: copyLevel.cats[indexCat].position.x + increase.x,
-        y: copyLevel.cats[indexCat].position.y + increase.y,
-      };
-
-      const isCatDestroy = copyLevel.cats[indexCat]?.destroy ?? false;
-
-      console.log({isCatDestroy})
-
-      console.log("newPosition: ", newPosition);
-
-      if (!isCatDestroy && insideBoard(newPosition, width, height)) {
-        const tilePosition = getTilePosition(tiles, newPosition);
-        const catPosition = getCatPosition(cats, newPosition);
-
-        console.log({ tilePosition, catPosition });
-
-
-        if(catPosition) {
-          console.log("hay un gato en esa posición");
-          break;
-        }
-
-        // Hay un title en esa posición...
-        if (tilePosition.length !== 0) {
-          // Se extrae el valor del tile
-          const typeTile = tilePosition[0].type;
-          const isBox = typeTile === ETiles.BOXES;
-          const isHide = tilePosition[0]?.hide ?? false;
-          console.log({ typeTile });
-
-          if (tilePosition.length === 2) {
-            // const typeTileTwo = tilePosition[1].type;
-            const tileBox = isBox ? tilePosition[0] : tilePosition[1];
-            const otherTile = isBox ? tilePosition[1] : tilePosition[0];
-
-            if (!tileBox.hide && catMove === 0) {
-              console.log("HAY UNA CAJA Y NO SE HA MOVIDO LO SUFICENTE");
-              break;
-            } else if (!tileBox.hide) {
-              // tileBox.hide = true;
-              tileBox.hide = true;
-              // tileBox.delay = catMove;
-              console.log("MUESTRA LA CAJA CUANDO HAY DOS");
-              break;
-            } else if (otherTile.type === ETiles.SPIKE) {
-              console.log("EL TILE ESTÁ LIBRE 03, pero es un spike");
-              copyLevel.cats[indexCat].position = newPosition;
-              copyLevel.cats[indexCat].destroy = true;
-              catMove++;
-            }
-          } else {
-            /**
-             * Como hay un ladrillo, se detiene y no se mueve más...
-             */
-            if (typeTile === ETiles.BRICK) {
-              console.log("hay un ladrillo");
-              break;
-            } else {
-              if (
-                !isHide &&
-                typeTile === ETiles.COIN &&
-                catColor === ECatColor.YELLOW
-              ) {
-                tilePosition[0].hide = true;
-                // tilePosition[0].delay = catMove;
-              }
-
-              if (!isHide && typeTile === ETiles.BOXES) {
-                if (catMove >= 1) {
-                  console.log("HAY UNA CAJA Y NO SE HA MOVIDO LO SUFICENTE 01");
-                  // tilePosition[0].hide = true;
-                  tilePosition[0].hide = true;
-                  // tilePosition[0].delay = catMove;
-                }
-                break;
-              }
-
-              if (!isHide && typeTile === ETiles.SPIKE) {
-                copyLevel.cats[indexCat].destroy = true;
-              }
-
-              // if(typeTile === ETiles.KEYS && catColor === ECatColor.BLACK) {
-              //   tilePosition[0].hide = true;
-              //   tilePosition[0].delay = 3
-              // }
-
-              console.log("EL TILE ESTÁ LIBRE 02");
-              copyLevel.cats[indexCat].position = newPosition;
-              catMove++;
-            }
-          }
-        } else {
-          console.log("EL TILE ESTÁ LIBRE");
-          copyLevel.cats[indexCat].position = newPosition;
-          catMove++;
-          // if (catPosition) {
-          //   console.log("hay un gato en esa posición");
-          //   break;
-          // } else {
-          //   console.log("EL TILE ESTÁ LIBRE");
-          //   copyLevel.cats[indexCat].position = newPosition;
-          //   catMove++;
-
-          //   // if (catMove >= 10) {
-          //   //   console.log("EVIATA CICLOC INFINITO");
-          //   //   break;
-          //   // }
-          //   // copyLevel.cats[indexCat].position.x = newPosition.x;
-          //   // copyLevel.cats[indexCat].position.x = newPosition.y;
-          //   // copyLevel.cats[indexCat].position.x = newPosition.y;
-          // }
-        }
-      } else {
-        console.log("SE SALIÓ DLE BOARD o el gato está destruído");
-        break;
-      }
-    } while (1);
-
-    console.log("TOTAL MOVE: ", catMove);
-    console.log("level: ", copyLevel);
-
-
-    // move
-
-    // else {
-    //   break
-    // }
-
-    // do {
-
-    // } while(1)
+  // Si no existe el gato, devolver sin cambios (evita posibles errores)
+  if (indexCat < 0) {
+    return { copyLevel, catMove };
   }
 
-  copyLevel.cats[indexCat].move = catMove >= 1;
+  do {
+    const currentCat = copyLevel.cats[indexCat];
 
-  return copyLevel;
+    // Calcular la nueva posición tentativa
+    const newPosition = {
+      x: currentCat.position.x + increase.x,
+      y: currentCat.position.y + increase.y,
+    };
+
+    // Si el gato ya está destruido o sale del tablero → detener
+    const isCatDestroy = currentCat?.destroy ?? false;
+    if (isCatDestroy || !insideBoard(newPosition, width, height)) {
+      break;
+    }
+
+    // Consultar qué hay en la nueva posición
+    const tilePosition = getTilePosition(tiles, newPosition); // tiles en esa celda (0, 1 o 2)
+    const catPosition = getCatPosition(cats, newPosition); // ¿hay otro gato?
+
+    // Si hay otro gato en esa casilla → detener
+    if (catPosition) {
+      break;
+    }
+
+    // Si hay al menos un tile en la casilla
+    if (tilePosition.length !== 0) {
+      // Extraer datos del primer tile (como en el original)
+      const typeTile = tilePosition[0].type;
+      const isBox = typeTile === ETiles.BOXES;
+      const isHide = tilePosition[0]?.hide ?? false;
+      const isOpen = tilePosition[0]?.open ?? false;
+
+      // Caso con 2 tiles (p. ej. BOX + otro)
+      if (tilePosition.length === 2) {
+        // Mantener la misma lógica: identificar la caja y el "otro tile"
+        const tileBox = isBox ? tilePosition[0] : tilePosition[1];
+        const otherTile = isBox ? tilePosition[1] : tilePosition[0];
+
+        // Caja visible y aún no avanzó: detener antes de mover
+        if (!tileBox.hide && catMove === 0) {
+          break;
+        }
+        // Caja visible pero ya avanzó ≥1: ocultar caja y detener
+        else if (!tileBox.hide) {
+          tileBox.hide = true;
+          break;
+        }
+        // Caja ya oculta: si el otro es SPIKE → avanzar y destruir
+        else if (otherTile.type === ETiles.SPIKE) {
+          currentCat.position = newPosition;
+          currentCat.destroy = true;
+          catMove++;
+        }
+        // Nota: si no es SPIKE, se continúa más abajo con el mismo patrón que el original:
+        // no hay movimiento adicional aquí (la versión original no movía salvo SPIKE).
+      }
+      // Caso con 1 tile
+      else {
+        // BRICK → bloqueo total
+        if (typeTile === ETiles.BRICK) {
+          break;
+        } else {
+          // BOX visible → si ya avanzó, ocultar; en todo caso, detener
+          if (!isHide && typeTile === ETiles.BOXES) {
+            if (catMove >= 1) {
+              tilePosition[0].hide = true;
+            }
+            break;
+          }
+
+          // GATES cerrada → sólo avanzar si ya se recolectaron todas las llaves
+          if (!isOpen && typeTile === ETiles.GATES) {
+            if (valiteCollectAllKeys(boardKeys)) {
+              tilePosition[0].open = true; // abrir puerta y permitir el paso
+            } else {
+              break; // puerta cerrada, detener
+            }
+          }
+
+          // COIN visible + gato amarillo → ocultar (con delay)
+          if (
+            !isHide &&
+            typeTile === ETiles.COIN &&
+            catColor === ECatColor.YELLOW
+          ) {
+            tilePosition[0].hide = true;
+            tilePosition[0].delay = catMove + 1;
+          }
+
+          // KEY visible + gato negro → ocultar (con delay)
+          if (
+            !isHide &&
+            typeTile === ETiles.KEYS &&
+            catColor === ECatColor.BLACK
+          ) {
+            tilePosition[0].hide = true;
+            tilePosition[0].delay = catMove + 1;
+          }
+
+          // SPIKE visible → el gato avanza y queda destruido
+          if (!isHide && typeTile === ETiles.SPIKE) {
+            currentCat.destroy = true;
+          }
+
+          // Si no se detuvo por alguna de las condiciones anteriores → mover
+          currentCat.position = newPosition;
+          catMove++;
+        }
+      }
+    }
+    // Casilla vacía → mover normalmente
+    else {
+      currentCat.position = newPosition;
+      catMove++;
+    }
+  } while (1);
+
+  // Marcar si el gato se movió al menos una casilla en este intento
+  if (copyLevel.cats[indexCat]) {
+    copyLevel.cats[indexCat].move = catMove >= 1;
+  }
+
+  return { copyLevel, catMove };
 };

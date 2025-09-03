@@ -1,6 +1,7 @@
 import "./styles.css";
 import {
   BASE_WIDTH_TILE,
+  CAT_SPEED,
   ECatColor,
   EDirections,
   ETiles,
@@ -11,240 +12,313 @@ import {
   hasClass,
   qs,
   removeClass,
+  setCssVariable,
   setHtml,
 } from "../../../../utils/helpers";
 import {
   Cat,
   CatElemet,
+  IBoardKeys,
   Level,
   TCatColor,
   Tiles,
 } from "../../../../interfaces";
-import { calculatePosition, validateMoveCat } from "./helpers";
+import {
+  calculatePosition,
+  getTileByType,
+  validateMoveCat,
+  valiteCollectAllKeys,
+} from "./helpers";
+
+const BASE_CLASS = "cat";
+const CAT_BLACK_CLASS = `.${BASE_CLASS}-black`;
+const CAT_YELLOW_CLASS = `.${BASE_CLASS}-yellow`;
+const BASE_TILE_CLASS = "#t-";
+
+const CLASS_NAMES = {
+  EXPLODE: "explode",
+  COIN: "coin",
+  OPEN: "open",
+  ANI: "ani",
+};
 
 class GridGame extends HTMLElement {
-  private totalCoins = 0;
-  private totalCoinCollection = 0;
+  // Estado interno de monedas recolectadas
+  private boardCoins = { total: 0, collected: 0 };
+  // Estado interno de llaves recolectadas
+  private boardKeys: IBoardKeys = { total: 0, collected: 0 };
+  // Referencias a los elementos DOM de los gatos
   private _cats: CatElemet | null = null;
+  // Datos del nivel actual
   private level: Level | null = null;
+  // Tamaño de cada tile en píxeles
   private size: number = 0;
+  // Número de movimientos que hizo el gato en el turno
+  private totalCatMove: number = 0;
+  // Flag para saber si ya se recogieron todas las llaves
+  private collectAllKeys: boolean = false;
 
+  // Setter para recibir los datos del nivel desde afuera
   set levelData(value: Level) {
     this.level = value;
     this.render();
   }
 
-  // get levelData(): Level | null {
-  //   return this.level;
-  // }
-
-  // static get observedAttributes() {
-  //   return ["level"];
-  // }
-
-  // private level: Level | null = null;
-
-  // attributeChangedCallback(name: string, _: string, newValue: string) {
-  //   if (name === "level") {
-  //     console.log("newValue: ", newValue);
-  //     // this.level = JSON.parse(newValue) as Level;
-  //     this.render();
-  //   }
-  // }
-
   connectedCallback() {
     this.render();
   }
 
+  /**
+   * Renderiza el tablero completo
+   */
   private render() {
     if (!this.level) return;
-    // console.log("EL NIVEL ACÁ llega JORGE: ", this.level);
+
+    // Calcula el tamaño en base al ancho del nivel
     this.size = Math.round(BASE_WIDTH_TILE / this.level.width);
-    this.totalCoins = this.level.tiles.filter(
-      (v) => v.type === ETiles.COIN
-    ).length;
-    // console.log({ size, BASE_WIDTH_TILE });
+
+    // Inicializa monedas y llaves
+    this.boardCoins = {
+      total: getTileByType(ETiles.COIN, this.level.tiles).length,
+      collected: 0,
+    };
+
+    this.boardKeys = {
+      total: getTileByType(ETiles.KEYS, this.level.tiles).length,
+      collected: 0,
+    };
+
     const width = this.level.width * this.size;
     const height = this.level.height * this.size;
 
+    // Inyecta el HTML del grid
     setHtml(this, this.renderGrid(width, height));
 
-    console.log("EL NIVEL ES: ", this.level);
-    console.log("TOTAL COINS: ", this.totalCoins);
-
-    // alert(this.cats.BLACK)
-    // alert(JSON.stringify((qs(this, ".cat-black") as HTMLButtonElement).classList))
-
-    // console.log("valor de this es: ", JSON.stringify(this, null, 2))
-    // debugger;
-
+    // Referencia a los gatos en el DOM
     this._cats = {
-      [ECatColor.BLACK]: qs(this, ".cat-black") as HTMLButtonElement,
-      [ECatColor.YELLOW]: qs(this, ".cat-yellow") as HTMLButtonElement,
+      [ECatColor.BLACK]: qs(this, CAT_BLACK_CLASS) as HTMLButtonElement,
+      [ECatColor.YELLOW]: qs(this, CAT_YELLOW_CLASS) as HTMLButtonElement,
     };
 
-    console.log(qs(this, ".cat-black") as HTMLButtonElement);
-    console.log("Los gatos son: ", this._cats);
-    console.log("EL VLAOR DE TAMAÑO ES: ", this.size);
-
-    // this._cats[ECatColor.BLACK] = qs(this, ".cat-black") as HTMLButtonElement;
-    // this._cats[ECatColor.YELLOW] = qs(this, ".cat-yellow") as HTMLButtonElement;
-
+    // Detecta gestos de swipe en cada gato
     [ECatColor.BLACK, ECatColor.YELLOW].forEach((color) => {
       const cat = this._cats?.[color];
       if (cat) {
         detectSwipe(cat, {
           onSwipe: (dir) => this.moveCat(color, dir),
         });
-
-        // $on(cat, "animationend", () => {
-        //   console.log("termina la aninación para: ", cat);
-        // });
       }
     });
-    // detectSwipe(this.cats.BLACK, {
-    //   onSwipe: (dir) => {
-    //     this.moveCat(ECatColor.BLACK, dir);
-    //   },
-    // });
-
-    // detectSwipe(this.cats.YELLOW, {
-    //   onSwipe: (dir) => {
-    //     this.moveCat(ECatColor.YELLOW, dir);
-    //   },
-    // });
   }
 
+  /**
+   * Intenta mover un gato en la dirección indicada
+   */
   moveCat(color: TCatColor, dir: EDirections) {
     if (!this.level) return;
 
-    console.log({ color, dir });
+    const { copyLevel, catMove } = validateMoveCat(
+      this.level,
+      color,
+      dir,
+      this.boardKeys
+    );
 
-    this.level = validateMoveCat(this.level, color, dir);
-    this.updateCats();
+    // Actualiza el nivel y movimientos
+    this.level = copyLevel;
+    this.totalCatMove = catMove;
 
-    // this.updateTiles(this.level.tiles);
-    console.log("COMO QUEDA EL NIVEL AHORA");
-    console.log(this.level);
-    // this.level = newLevel;
-    // const cat = this.cats[color];
-    // const increase = INCREASE_SWIPE[dir];
-    // console.log({ color, dir, cat, increase });
+    if (this.totalCatMove >= 1) {
+      this.updateCats();
+    }
   }
 
-
+  /**
+   * Actualiza las monedas y llaves recolectadas visualmente
+   */
   updateCoins() {
-    if(!this.level) return;
+    if (!this.level) return;
 
-    this.level.tiles.filter(v => v.type === ETiles.COIN || v.type === ETiles.KEYS).forEach(tile => {
-      const element = qs(this, `#t-${tile.position.x}-${tile.position.y}`) as HTMLElement;
+    [
+      ...getTileByType(ETiles.COIN, this.level.tiles),
+      ...getTileByType(ETiles.KEYS, this.level.tiles),
+    ].forEach((tile) => {
+      const element = qs(
+        this,
+        `${BASE_TILE_CLASS}${tile.position.x}-${tile.position.y}`
+      ) as HTMLElement;
 
-      if (tile.hide && tile.type === ETiles.COIN && !hasClass(element, "coin")) {
-        console.log("ANIMAR LA MONEDA")
-        addClass(element, "coin");
-        this.totalCoinCollection ++;
+      // Cuando se oculta un tile, dispara la animación
+      if (tile.hide && !hasClass(element, CLASS_NAMES.COIN)) {
+        addClass(element, CLASS_NAMES.COIN);
+        setCssVariable(element, "s", `${(tile.delay || 0) * CAT_SPEED}ms`);
+
+        if (tile.type === ETiles.COIN) {
+          this.boardCoins.collected++;
+        } else {
+          this.boardKeys.collected++;
+        }
       }
-      // TODO: validar las llaves
-    })
+    });
   }
 
+  /**
+   * Actualiza las cajas destruidas
+   */
   updateBoxes() {
-    if(!this.level) return;
+    if (!this.level) return;
 
-    this.level.tiles.filter(v => v.type === ETiles.BOXES).forEach(tile => {
-      const element = qs(this, `#t-${tile.position.x}-${tile.position.y}`) as HTMLElement;
+    getTileByType(ETiles.BOXES, this.level.tiles).forEach((tile) => {
+      const element = qs(
+        this,
+        `${BASE_TILE_CLASS}${tile.position.x}-${tile.position.y}`
+      ) as HTMLElement;
 
-      if (tile.hide && !hasClass(element, "explode")) {
-        console.log("EXPLOTAR LA CAJA")
-        addClass(element, "explode");
+      if (tile.hide && !hasClass(element, CLASS_NAMES.EXPLODE)) {
+        addClass(element, CLASS_NAMES.EXPLODE);
       }
-    })
+    });
   }
 
-  
+  /**
+   * Abre puertas cuando se recolectan todas las llaves
+   */
+  updateDoors() {
+    if (!this.level || this.boardKeys.total === 0 || this.collectAllKeys)
+      return;
 
-  updateCats() {
-    if(!this.level) return;
+    this.collectAllKeys = valiteCollectAllKeys(this.boardKeys);
 
-    this.level.cats.forEach(async (cat) => {
+    if (this.collectAllKeys) {
+      getTileByType(ETiles.GATES, this.level.tiles).forEach((tile) => {
+        const element = qs(
+          this,
+          `${BASE_TILE_CLASS}${tile.position.x}-${tile.position.y}`
+        ) as HTMLElement;
+
+        if (!hasClass(element, CLASS_NAMES.OPEN)) {
+          addClass(element, CLASS_NAMES.OPEN);
+        }
+      });
+    }
+  }
+
+  /**
+   * Ejecuta las animaciones de los gatos en el tablero
+   */
+  async updateCats() {
+    if (!this.level) return;
+
+    this.disabledCats(true);
+
+    for (const cat of this.level.cats) {
       const catElemet = this._cats?.[cat.color];
 
       if (catElemet && cat.move) {
         this.updateCoins();
 
-        addClass(catElemet, "ani");
+        // Se añade clase de animación
+        addClass(catElemet, CLASS_NAMES.ANI);
+
         const { x, y } = calculatePosition(cat.position, this.size);
-        // catElemet.style.transform = `translate(${x}, ${y})`;
-        catElemet.style.setProperty("--x", x)
-        catElemet.style.setProperty("--y", y)
-        catElemet.disabled = true;
+
+        // Variables CSS para animación
+        setCssVariable(catElemet, "x", x);
+        setCssVariable(catElemet, "y", y);
+        setCssVariable(catElemet, "s", `${CAT_SPEED * this.totalCatMove}ms`);
+
+        // Espera que terminen todas las animaciones CSS
         const animations = catElemet.getAnimations().map((a) => a.finished);
         await Promise.allSettled(animations);
 
-        console.log("TERMINA DE HACER LA ANIMACIÓN: ");
-
+        // Resetea estado del gato
         cat.move = false;
-        removeClass(catElemet, "ani");
-        // Indica que no se mueve el gato
-        if(cat.destroy && !this.collectAllCoins()) {
-          console.log("DESTRUIR AL GATO, ESTO SIGNIFICA QUE ES GAME OVER!!!");
-          addClass(catElemet, 'explode');
-        } else {
-          catElemet.disabled = false;
-        }
-        this.valideGameOver()
+        removeClass(catElemet, CLASS_NAMES.ANI);
 
-        this.updateBoxes()
+        if (cat.destroy && !this.collectAllCoins()) {
+          // GAME OVER: el gato fue destruido
+          addClass(catElemet, CLASS_NAMES.EXPLODE);
+        } else {
+          this.disabledCats(false);
+        }
+
+        this.valideGameOver();
+        this.updateBoxes();
+        this.updateDoors();
+      }
+    }
+  }
+
+  /**
+   * Verifica si se completó el nivel (todas las monedas recolectadas)
+   */
+  valideGameOver() {
+    if (this.collectAllCoins()) {
+      this.disabledCats(true);
+      console.log("GAME OVER, LEVEL COMPLETE");
+    }
+  }
+
+  /**
+   * Revisa si ya se recolectaron todas las monedas
+   */
+  collectAllCoins() {
+    return this.boardCoins.total === this.boardCoins.collected;
+  }
+
+  /**
+   * Habilita o deshabilita la interacción con los gatos
+   */
+  disabledCats(disabled = false) {
+    if (!this.level) return;
+
+    this.level.cats.forEach((cat) => {
+      const catElemet = this._cats?.[cat.color];
+      if (catElemet) {
+        catElemet.disabled = disabled;
       }
     });
   }
 
-
-  valideGameOver() {
-    if(this.collectAllCoins()) {
-      console.log("GAME OVER, LEVEL COMPLETE");
-      // TODO: bloquedar a los gatos...
-    }
-  }
-
-  collectAllCoins() {
-    return this.totalCoinCollection === this.totalCoins;
-  }
-
-  
-
+  /**
+   * Renderiza la grilla principal
+   */
   renderGrid(width = 0, height = 0) {
     if (!this.level) return "";
 
-    return /*html*/ `<div class="gg bri" style="--si:${
-      this.size
-    }px;width:${width}px;height:${height}px">${this.renderTiles(
-      this.level.tiles
-    )}
-    ${this.renderCats(this.level.cats)}
-    </div>`;
+    return /*html*/ `<div class="gg bri" 
+        style="--si:${this.size}px;width:${width}px;height:${height}px">
+        ${this.renderTiles(this.level.tiles)}
+        ${this.renderCats(this.level.cats)}
+      </div>`;
   }
 
+  /**
+   * Renderiza cada tile del tablero
+   */
   renderTiles(tiles: Tiles[]) {
     return tiles
       .map(({ type, position }) => {
         const { x, y } = calculatePosition(position, this.size);
         return /*html*/ `<div ${
-          type !== ETiles.BRICK && type !== ETiles.SPIKE ? `id="t-${position.x}-${position.y}"` : ""
-        } class="tile tile-${type} ${type === 0 ? "bri" : ""}" style="--si:${
-          this.size
-        }px;left:${x};top:${y}"></div>`;
+          type !== ETiles.BRICK && type !== ETiles.SPIKE
+            ? `id="t-${position.x}-${position.y}"`
+            : ""
+        } class="tile tile-${type} ${type === 0 ? "bri" : ""}" 
+        style="--si:${this.size}px;left:${x};top:${y}"></div>`;
       })
       .join("");
   }
 
+  /**
+   * Renderiza los gatos iniciales
+   */
   renderCats(cats: Cat[]) {
     return cats
       .map(({ color, position }) => {
         const { x, y } = calculatePosition(position, this.size);
-        return /*html*/ `<button class="cat cat-${color.toLowerCase()}" style="--si:${
-          this.size
-        }px;--x:${x};--y:${y};"></button>`;
+        return /*html*/ `<button class="cat cat-${color.toLowerCase()}" 
+          style="--si:${this.size}px;--x:${x};--y:${y};"></button>`;
       })
       .join("");
   }

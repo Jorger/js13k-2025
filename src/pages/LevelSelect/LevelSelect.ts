@@ -1,41 +1,77 @@
 import "./styles.css";
-import { getTotalLevels } from "../../levels";
 import { $on, qs, qsa, setHtml } from "../../utils/helpers";
+import { EVENT_TYPE, ROUTER_COMPONENT, ROUTER_PAGE } from "../../utils/constants";
+import { getCurrentLevelFromCache, getTotalLevels } from "../../levels";
+import { navigate } from "../../utils/navigate";
+import ButtonGame from "../../components/button";
 import template from "./template.html?raw";
 
+// Número total de niveles disponibles
 const TOTAL_LEVELS = getTotalLevels();
-// const TOTAL_LEVELS = 40
 
+/**
+ *
+ * Representa la pantalla de selección de niveles.
+ */
 class LevelSelect extends HTMLElement {
+  private completedLevel = 0;
+
   connectedCallback() {
+    // Renderiza el template base
     this.innerHTML = template;
 
-    const container = qs(this, ".pag-c") as HTMLElement;
-    // console.log(container)
+    // El número dle nivel que ya se ha completado...
+    this.completedLevel = getCurrentLevelFromCache();
+
+    // Contenedor donde van los botones de niveles
+    const container = qs(this, ".pag-s") as HTMLElement;
+
+    // Wrapper para insertar elementos adicionales como el botón "Back"
+    const wrapper = qs(this, ".pag-c") as HTMLElement;
+
+    // Inserta dinámicamente los botones de los niveles
     setHtml(container, this.renderLevels());
 
+    // Agrega eventos a cada botón de nivel
     qsa(this, ".button").forEach((button) => {
-      const numLevel = +button.textContent;
-      $on(button as HTMLElement, "click", () => {
-        console.log(numLevel);
-        window.dispatchEvent(
-          new CustomEvent("navigate", {
-            detail: { page: "game", params: { level: numLevel - 1 } },
-          })
+      const numLevel = +button.textContent!;
+
+      if (numLevel - 1 <= this.completedLevel) {
+        $on(button as HTMLElement, EVENT_TYPE.CLICK, () =>
+          // Se navega a la página del juego pasando el índice del nivel
+          navigate(ROUTER_PAGE.GAME, { level: numLevel - 1 })
         );
-      });
+      }
     });
+
+    // Botón "Back" para regresar al lobby
+    const backButton = new ButtonGame(
+      "back",
+      "Back",
+      () => navigate(),
+      "left: 175px;top: 71px;"
+    );
+
+    // Inserta el botón en el wrapper y activa su evento
+    wrapper.insertAdjacentHTML("beforeend", backButton.render());
+    backButton.event();
   }
 
-  renderLevels() {
+  /**
+   * Renderiza todos los botones de niveles.
+   * @returns {string} HTML con los botones numerados de 1 a TOTAL_LEVELS
+   */
+  renderLevels(): string {
     return new Array(TOTAL_LEVELS)
       .fill(null)
       .map(
         (_, index) =>
-          /*html*/ `<button class="button df jc ai">${index + 1}</button>`
+          /*html*/ `<button class="button df jc ai" ${
+            index > this.completedLevel ? "disabled" : ""
+          }>${index + 1}</button>`
       )
       .join("");
   }
 }
 
-customElements.define("app-level-select", LevelSelect);
+customElements.define(ROUTER_COMPONENT.LEVEL_SELECT, LevelSelect);

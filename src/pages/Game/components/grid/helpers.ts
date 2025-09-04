@@ -77,7 +77,6 @@ export const getTileByType = (type: ETiles, tiles: Tiles[]) =>
 export const valiteCollectAllKeys = (boardKeys: IBoardKeys) =>
   boardKeys.total === boardKeys.collected;
 
-
 // TODO, vlaidar que cuando ha recogido todas las monedas y pasa sobre spikes siga derecho
 
 /**
@@ -165,8 +164,6 @@ export const validateMoveCat = (
           currentCat.destroy = true;
           catMove++;
         }
-        // Nota: si no es SPIKE, se continúa más abajo con el mismo patrón que el original:
-        // no hay movimiento adicional aquí (la versión original no movía salvo SPIKE).
       }
       // Caso con 1 tile
       else {

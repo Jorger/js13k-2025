@@ -1,5 +1,4 @@
-// import type { SwipeDirection } from "../interfaces";
-import { EDirections } from "./constants";
+import { EDirections, EVENT_TYPE } from "./constants";
 import { $on } from "./helpers";
 
 interface SwipeOptions {
@@ -44,15 +43,13 @@ export function detectSwipe(element: HTMLElement, options: SwipeOptions) {
 
   // --- EVENTOS ---
   // Desktop
-  $on(element, "mousedown", (e) => start(e.clientX, e.clientY));
-  $on(window, "mouseup", (e) => end(e.clientX, e.clientY));
-  // element.addEventListener("mousedown", (e) => start(e.clientX, e.clientY));
-  // window.addEventListener("mouseup", (e) => end(e.clientX, e.clientY)); // ahora en window
+  $on(element, EVENT_TYPE.MOUSE_DOWN, (e) => start(e.clientX, e.clientY));
+  $on(window, EVENT_TYPE.MOUSE_UP, (e) => end(e.clientX, e.clientY));
 
   // Mobile
   $on(
     element,
-    "touchstart",
+    EVENT_TYPE.TOUCH_START,
     (e) => {
       const t = e.changedTouches[0];
       start(t.clientX, t.clientY);
@@ -62,29 +59,11 @@ export function detectSwipe(element: HTMLElement, options: SwipeOptions) {
 
   $on(
     element,
-    "touchend",
+    EVENT_TYPE.TOUCH_END,
     (e) => {
       const t = e.changedTouches[0];
       end(t.clientX, t.clientY);
     },
     { passive: true }
   );
-
-  // element.addEventListener(
-  //   "touchstart",
-  //   (e) => {
-  //     const t = e.changedTouches[0];
-  //     start(t.clientX, t.clientY);
-  //   },
-  //   { passive: true }
-  // );
-
-  // element.addEventListener(
-  //   "touchend",
-  //   (e) => {
-  //     const t = e.changedTouches[0];
-  //     end(t.clientX, t.clientY);
-  //   },
-  //   { passive: true }
-  // );
 }

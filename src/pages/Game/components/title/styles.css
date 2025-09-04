@@ -1,8 +1,0 @@
-cell-tile {
-  display: block;
-  position: absolute;
-  border: 1px solid red;
-
-  width: 40px;
-  height: 40px;
-}

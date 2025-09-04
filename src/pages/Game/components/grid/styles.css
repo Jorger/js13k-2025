@@ -2,6 +2,7 @@
   --sg: calc(var(--si) / 2);
   border: 5px solid #000;
   position: relative;
+  animation: scaleAndRotate 0.6s ease-out forwards;
   /* Podria no dejarlo */
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
@@ -218,62 +219,14 @@
   }
 }
 
-/* @keyframes cat-blink {
-  95% {
-    --eye-size: 10% 25%;
-    --eyelid-size: 37% 0;
-
-    --left-eye-position: 15% 67%;
-    --right-eye-position: 85% 67%;
-    --left-eyelid-position: 0px 67%;
-    --right-eyelid-position: 100% 67%;
-
-    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
-      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
-
-    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
-      var(--left-eyelid-position), var(--right-eye-position),
-      var(--right-eyelid-position), center 71%, 0 100%;
-
-    background-size: var(--cat-size);
-    background-position: var(--cat-position);
+/* Definición de la animación */
+@keyframes scaleAndRotate {
+  0% {
+    transform: scale(1.2) rotate(10deg);
+    opacity: 0; /* opcional: se desvanece al aparecer */
   }
-  97% {
-    --eye-size: 10% 10%;
-    --eyelid-size: 37% 15%;
-
-    --left-eye-position: 15% 73%;
-    --right-eye-position: 85% 73%;
-    --left-eyelid-position: 0px 60%;
-    --right-eyelid-position: 100% 60%;
-
-    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
-      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
-
-    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
-      var(--left-eyelid-position), var(--right-eye-position),
-      var(--right-eyelid-position), center 71%, 0 100%;
-
-    background-size: var(--cat-size);
-    background-position: var(--cat-position);
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
-  99% {
-    --eye-size: 10% 0;
-    --eyelid-size: 37% 25%;
-
-    --left-eye-position: 15% 67%;
-    --right-eye-position: 85% 67%;
-    --left-eyelid-position: 0px 67%;
-    --right-eyelid-position: 100% 67%;
-
-    --cat-size: 25% 25%, 25% 25%, 25% 25%, var(--eye-size), var(--eyelid-size),
-      var(--eye-size), var(--eyelid-size), 25% 17%, 100% 50%;
-
-    --cat-position: 15% 15%, 85% 15%, 50% 55%, var(--left-eye-position),
-      var(--left-eyelid-position), var(--right-eye-position),
-      var(--right-eyelid-position), center 71%, 0 100%;
-
-    background-size: var(--cat-size);
-    background-position: var(--cat-position);
-  }
-} */
+}

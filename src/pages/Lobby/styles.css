@@ -1,13 +1,14 @@
 .lob-c {
   .cat {
-    position: relative;  
+    position: relative;
   }
 
   h1 {
     margin: 30px 0;
     text-shadow: 1px 6px 4px #000;
     line-height: 50px;
-    font-weight: bold;    
+    font-weight: bold;
+    padding-top: 20px;
 
     span {
       display: block;
@@ -45,5 +46,3 @@
     }
   }
 }
-
-

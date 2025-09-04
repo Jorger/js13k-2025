@@ -2,8 +2,9 @@
   /* border: 1px solid red; */
   flex-flow: wrap;
   gap: 10px;
-  row-gap: 20px;
-  align-content: center;
+  row-gap: 15px;
+  align-content: flex-end;
+  margin-top: 60px;
 
   .button {
     width: 20px;
@@ -11,5 +12,9 @@
     font-size: 20px;
     padding: 20px;
     text-shadow: none;
+
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 }

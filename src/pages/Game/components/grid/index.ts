@@ -129,7 +129,7 @@ class GridGame extends HTMLElement {
     this.totalCatMove = catMove;
 
     if (this.totalCatMove >= 1) {
-      this.updateCats();
+      this.updateCats(color);
     }
   }
 
@@ -206,47 +206,51 @@ class GridGame extends HTMLElement {
   /**
    * Ejecuta las animaciones de los gatos en el tablero
    */
-  async updateCats() {
-    if (!this.level) return;
+  async updateCats(color: TCatColor) {
+    const catElemet = this._cats?.[color];
+
+    if (!this.level || !catElemet) return;
+
+    /**
+     * Se obtiene el valor del gato...
+     */
+    const cat = this.level.cats.find((v) => v.color === color);
+
+    /**
+     * Valida qu eexista el gato...
+     */
+    if (!cat) return;
 
     this.disabledCats(true);
+    this.updateCoins();
 
-    for (const cat of this.level.cats) {
-      const catElemet = this._cats?.[cat.color];
+    // Se añade clase de animación
+    addClass(catElemet, CLASS_NAMES.ANI);
 
-      if (catElemet && cat.move) {
-        this.updateCoins();
+    const { x, y } = calculatePosition(cat.position, this.size);
 
-        // Se añade clase de animación
-        addClass(catElemet, CLASS_NAMES.ANI);
+    // Variables CSS para animación
+    setCssVariable(catElemet, "x", x);
+    setCssVariable(catElemet, "y", y);
+    setCssVariable(catElemet, "s", `${CAT_SPEED * this.totalCatMove}ms`);
 
-        const { x, y } = calculatePosition(cat.position, this.size);
+    // Espera que terminen todas las animaciones CSS
+    const animations = catElemet.getAnimations().map((a) => a.finished);
+    await Promise.allSettled(animations);
 
-        // Variables CSS para animación
-        setCssVariable(catElemet, "x", x);
-        setCssVariable(catElemet, "y", y);
-        setCssVariable(catElemet, "s", `${CAT_SPEED * this.totalCatMove}ms`);
+    // Resetea estado del gato
+    removeClass(catElemet, CLASS_NAMES.ANI);
 
-        // Espera que terminen todas las animaciones CSS
-        const animations = catElemet.getAnimations().map((a) => a.finished);
-        await Promise.allSettled(animations);
-
-        // Resetea estado del gato
-        cat.move = false;
-        removeClass(catElemet, CLASS_NAMES.ANI);
-
-        if (cat.destroy && !this.collectAllCoins()) {
-          // GAME OVER: el gato fue destruido
-          addClass(catElemet, CLASS_NAMES.EXPLODE);
-        } else {
-          this.disabledCats(false);
-        }
-
-        this.valideGameOver();
-        this.updateBoxes();
-        this.updateDoors();
-      }
+    if (cat.destroy && !this.collectAllCoins()) {
+      // GAME OVER: el gato fue destruido
+      addClass(catElemet, CLASS_NAMES.EXPLODE);
+    } else {
+      this.disabledCats(false);
     }
+
+    this.valideGameOver();
+    this.updateBoxes();
+    this.updateDoors();
   }
 
   /**

@@ -229,10 +229,5 @@ export const validateMoveCat = (
     }
   } while (1);
 
-  // Marcar si el gato se movió al menos una casilla en este intento
-  if (copyLevel.cats[indexCat]) {
-    copyLevel.cats[indexCat].move = catMove >= 1;
-  }
-
   return { copyLevel, catMove };
 };

@@ -56,12 +56,11 @@ html {
   height: 100%;
 }
 
-a-r {
+app-router {
   width: var(--bw);
   height: var(--bh);
-  /* border: 1px solid red; */
+  position: relative;
 }
-
 
 .cat {
   --pos: translate(var(--x), var(--y));

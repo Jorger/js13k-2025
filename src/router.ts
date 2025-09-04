@@ -1,24 +1,33 @@
-import { BASE_HEIGHT, BASE_WIDTH, ROUTER_NAME } from "./utils/constants";
-
-type NavigateDetail = {
-  page: string;
-  params?: Record<string, any>;
-};
+import {
+  BASE_HEIGHT,
+  BASE_WIDTH,
+  CUSTOM_ROUTER_EVENT_NAME,
+  EVENT_TYPE,
+  GAME_LABEL_ATTRIBUTE,
+  ROUTER_COMPONENT,
+  ROUTER_PAGE,
+} from "./utils/constants";
+import type { NavigateDetail } from "./interfaces";
 
 class AppRouter extends HTMLElement {
   private currentPage: HTMLElement | null = null;
 
   connectedCallback() {
-    this.navigate("lobby"); // Página por defecto
+    // Página por defecto
+    this.navigate(ROUTER_PAGE.LOBBY);
 
-    window.addEventListener("navigate", (e: Event) => {
+    window.addEventListener(CUSTOM_ROUTER_EVENT_NAME, (e: Event) => {
       const customEvent = e as CustomEvent<NavigateDetail>;
       this.navigate(customEvent.detail.page, customEvent.detail.params);
     });
 
+    document.addEventListener(
+      EVENT_TYPE.CONTEXT_MENU,
+      (e) => e.preventDefault(),
+      false
+    );
 
-    document.addEventListener("contextmenu", (e) => e.preventDefault(), false);
-    window.addEventListener("resize", () => this.applyZoom());
+    window.addEventListener(EVENT_TYPE.RESIZE, () => this.applyZoom());
     this.applyZoom();
   }
 
@@ -39,20 +48,20 @@ class AppRouter extends HTMLElement {
     let element: HTMLElement;
 
     switch (page) {
-      case "lobby":
-        element = document.createElement("app-lobby");
+      case ROUTER_PAGE.LOBBY:
+        element = document.createElement(ROUTER_COMPONENT.LOBBY);
         break;
-      case "level-select":
-        element = document.createElement("app-level-select");
+      case ROUTER_PAGE.LEVEL_SELECT:
+        element = document.createElement(ROUTER_COMPONENT.LEVEL_SELECT);
         break;
-      case "game":
-        element = document.createElement("app-game");
+      case ROUTER_PAGE.GAME:
+        element = document.createElement(ROUTER_COMPONENT.GAME);
         if (params.level) {
-          element.setAttribute("level", String(params.level));
+          element.setAttribute(GAME_LABEL_ATTRIBUTE, String(params.level));
         }
         break;
       default:
-        element = document.createElement("app-lobby");
+        element = document.createElement(ROUTER_COMPONENT.LOBBY);
     }
 
     this.appendChild(element);
@@ -60,4 +69,4 @@ class AppRouter extends HTMLElement {
   }
 }
 
-customElements.define(ROUTER_NAME, AppRouter);
+customElements.define(ROUTER_COMPONENT.ROUTER, AppRouter);

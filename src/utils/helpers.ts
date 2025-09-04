@@ -1,5 +1,5 @@
-// export const $ = document.querySelector.bind(document);
-// export const $$ = document.querySelectorAll.bind(document);
+export const $ = document.querySelector.bind(document);
+export const $$ = document.querySelectorAll.bind(document);
 
 export const qs = (target: HTMLElement, query = "") => {
   return target.querySelector(query);
@@ -26,9 +26,6 @@ export function cloneDeep<T>(value: T): T {
   return JSON.parse(JSON.stringify(value as T));
 }
 
-// export const
-// getAttribute
-
 export const addClass = (target: HTMLElement, className = "") => {
   if (target) {
     className.split(" ").forEach((classText) => {
@@ -54,20 +51,39 @@ export const setCssVariable = (
   value = ""
 ) => target.style.setProperty(`--${variable}`, value);
 
-// export const addStyle = (
-//   target: null | HTMLElement,
-//   styles: Record<string, string>
-// ): void => {
-//   if (target) {
-//     for (const style in styles) {
-//       target.style[style as any] = styles[style];
-//     }
-//   }
-// };
+export const addStyle = (
+  target: null | HTMLElement,
+  styles: Record<string, string>
+): void => {
+  if (target) {
+    for (const style in styles) {
+      target.style[style as any] = styles[style];
+    }
+  }
+};
 
-// export const inlineStyles = (styles: Record<string, string>) =>
-//   Object.keys(styles).length
-//     ? `style='${Object.keys(styles)
-//         .map((v) => `${v}:${styles[v]}`)
-//         .join(";")}'`
-//     : "";
+export const inlineStyles = (styles: Record<string, string>) =>
+  Object.keys(styles).length
+    ? `style='${Object.keys(styles)
+        .map((v) => `${v}:${styles[v]}`)
+        .join(";")}'`
+    : "";
+
+export const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+export const isValidJson = (json = "") => {
+  try {
+    JSON.parse(json);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+export function isValidNumber(value: number | string): boolean {
+  return (
+    (typeof value === "number" || typeof value === "string") &&
+    !isNaN(value as any)
+  );
+}

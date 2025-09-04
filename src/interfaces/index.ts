@@ -40,23 +40,14 @@ export interface IBoardKeys {
   collected: number;
 }
 
-// const tem: Level = {
-//   size: 30,
-//   cats: [
-//     {
-//       color: "YELLOW",
-//       position: {
-//         x: 4,
-//         y: 2
-//       }
-//     },
-//     {
-//       color: "BLACK",
-//       position: {
-//         x: 2,
-//         y: 2
-//       }
-//     }
-//   ],
-//   tiles: []
-// }
+export interface GridActionDetail {
+  success?: boolean;
+  isExplode: boolean;
+}
+
+export type GridActionEvent = CustomEvent<GridActionDetail>;
+
+export type NavigateDetail = {
+  page: string;
+  params?: Record<string, any>;
+};

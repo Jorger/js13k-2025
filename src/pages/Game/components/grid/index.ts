@@ -1,14 +1,9 @@
 import "./styles.css";
-import {
-  BASE_WIDTH_TILE,
-  CAT_SPEED,
-  ECatColor,
-  EDirections,
-  ETiles,
-} from "../../../../utils/constants";
 import { detectSwipe } from "../../../../utils/detectSwipe";
+import { saveLevelCache } from "../../../../levels";
 import {
   addClass,
+  delay,
   hasClass,
   qs,
   removeClass,
@@ -16,19 +11,31 @@ import {
   setHtml,
 } from "../../../../utils/helpers";
 import {
-  Cat,
-  CatElemet,
-  IBoardKeys,
-  Level,
-  TCatColor,
-  Tiles,
-} from "../../../../interfaces";
+  BASE_WIDTH_TILE,
+  CAT_SPEED,
+  ECatColor,
+  EDirections,
+  ETiles,
+  HANDLE_GRID_ACTION,
+  ROUTER_COMPONENT,
+} from "../../../../utils/constants";
 import {
   calculatePosition,
   getTileByType,
   validateMoveCat,
   valiteCollectAllKeys,
 } from "./helpers";
+import {
+  Cat,
+  CatElemet,
+  GridActionDetail,
+  IBoardKeys,
+  Level,
+  TCatColor,
+  Tiles,
+} from "../../../../interfaces";
+import Alert from "../../../../components/alert";
+import { PlaySound } from "../../../../utils/sounds";
 
 const BASE_CLASS = "cat";
 const CAT_BLACK_CLASS = `.${BASE_CLASS}-black`;
@@ -57,10 +64,12 @@ class GridGame extends HTMLElement {
   private totalCatMove: number = 0;
   // Flag para saber si ya se recogieron todas las llaves
   private collectAllKeys: boolean = false;
+  private levelNumber: number = 0;
 
   // Setter para recibir los datos del nivel desde afuera
-  set levelData(value: Level) {
-    this.level = value;
+  set levelData(value: { level: Level; levelNumber: number }) {
+    this.level = value.level;
+    this.levelNumber = value.levelNumber;
     this.render();
   }
 
@@ -151,13 +160,17 @@ class GridGame extends HTMLElement {
       // Cuando se oculta un tile, dispara la animación
       if (tile.hide && !hasClass(element, CLASS_NAMES.COIN)) {
         addClass(element, CLASS_NAMES.COIN);
-        setCssVariable(element, "s", `${(tile.delay || 0) * CAT_SPEED}ms`);
+        const delayAnimation = (tile.delay || 0) * CAT_SPEED;
+        setCssVariable(element, "s", `${delayAnimation}ms`);
 
         if (tile.type === ETiles.COIN) {
           this.boardCoins.collected++;
         } else {
           this.boardKeys.collected++;
         }
+
+        // await delay(delayAnimation);
+        // PlaySound("shot");
       }
     });
   }
@@ -244,6 +257,10 @@ class GridGame extends HTMLElement {
     if (cat.destroy && !this.collectAllCoins()) {
       // GAME OVER: el gato fue destruido
       addClass(catElemet, CLASS_NAMES.EXPLODE);
+
+      // Mostrar la ventana de game over...
+      await delay(300);
+      this.showModal(true);
     } else {
       this.disabledCats(false);
     }
@@ -256,11 +273,39 @@ class GridGame extends HTMLElement {
   /**
    * Verifica si se completó el nivel (todas las monedas recolectadas)
    */
-  valideGameOver() {
+  async valideGameOver() {
     if (this.collectAllCoins()) {
       this.disabledCats(true);
-      console.log("GAME OVER, LEVEL COMPLETE");
+      // Guardar el nivel completado en localStorage
+      saveLevelCache(this.levelNumber);
+
+      await delay(200);
+      this.showModal();
     }
+  }
+
+  showModal(isExplode = false) {
+    const data = {
+      icon: isExplode ? "😿" : "😺",
+      txt: isExplode
+        ? "Ouch! Try again."
+        : "Level Complete! Get ready for the next one.",
+      no: "Home",
+      yes: isExplode ? "Restart" : "Next Level",
+    };
+
+    Alert.show({
+      ...data,
+      cb: (success) => {
+        this.dispatchEvent(
+          new CustomEvent<GridActionDetail>(HANDLE_GRID_ACTION, {
+            detail: { success, isExplode },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      },
+    });
   }
 
   /**
@@ -290,11 +335,11 @@ class GridGame extends HTMLElement {
   renderGrid(width = 0, height = 0) {
     if (!this.level) return "";
 
-    return /*html*/ `<div class="gg bri" 
-        style="--si:${this.size}px;width:${width}px;height:${height}px">
-        ${this.renderTiles(this.level.tiles)}
-        ${this.renderCats(this.level.cats)}
-      </div>`;
+    return /*html*/ `<div class="gg bri" style="--si:${
+      this.size
+    }px;width:${width}px;height:${height}px">${this.renderTiles(
+      this.level.tiles
+    )}${this.renderCats(this.level.cats)}</div>`;
   }
 
   /**
@@ -308,8 +353,9 @@ class GridGame extends HTMLElement {
           type !== ETiles.BRICK && type !== ETiles.SPIKE
             ? `id="t-${position.x}-${position.y}"`
             : ""
-        } class="tile tile-${type} ${type === 0 ? "bri" : ""}" 
-        style="--si:${this.size}px;left:${x};top:${y}"></div>`;
+        } class="tile tile-${type} ${type === 0 ? "bri" : ""}" style="--si:${
+          this.size
+        }px;left:${x};top:${y}"></div>`;
       })
       .join("");
   }
@@ -321,11 +367,12 @@ class GridGame extends HTMLElement {
     return cats
       .map(({ color, position }) => {
         const { x, y } = calculatePosition(position, this.size);
-        return /*html*/ `<button class="cat cat-${color.toLowerCase()}" 
-          style="--si:${this.size}px;--x:${x};--y:${y};"></button>`;
+        return /*html*/ `<button class="cat cat-${color.toLowerCase()}" style="--si:${
+          this.size
+        }px;--x:${x};--y:${y};"></button>`;
       })
       .join("");
   }
 }
 
-customElements.define("grid-game", GridGame);
+customElements.define(ROUTER_COMPONENT.GRID, GridGame);

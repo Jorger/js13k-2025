@@ -12,7 +12,6 @@ export interface coordinate {
 export interface Cat {
   color: TCatColor;
   position: coordinate;
-  move?: boolean;
   destroy?: boolean;
 }
 

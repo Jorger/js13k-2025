@@ -1,14 +1,20 @@
 import { getLevel, getTotalLevels } from "../../levels";
-import { GridActionEvent, Level } from "../../interfaces";
 import { navigate } from "../../utils/navigate";
+import { PlaySound } from "../../utils/sounds";
+import { savePropierties } from "../../utils/storage";
 import { setHtml } from "../../utils/helpers";
 import {
+  ESounds,
   GAME_LABEL_ATTRIBUTE,
   HANDLE_GRID_ACTION,
+  LOCAL_STORAGE_KEY,
   ROUTER_COMPONENT,
+  ROUTER_PAGE,
 } from "../../utils/constants";
 import Alert from "../../components/alert";
 import ButtonGame from "../../components/button";
+import LevelLabel from "../../components/levelLabel";
+import type { GridActionEvent, Level } from "../../interfaces";
 
 // Total de niveles disponibles en el juego
 const TOTAL_LEVELS = getTotalLevels();
@@ -41,15 +47,20 @@ class Game extends HTMLElement {
     this.gameSate = getLevel(this.level);
 
     // Crear botones con sus callbacks
-    const backButton = new ButtonGame("back", "Back", () => navigate());
+    const backButton = new ButtonGame("back", "Back", () =>
+      navigate(ROUTER_PAGE.LEVEL_SELECT)
+    );
     const restartButton = new ButtonGame("restart", "Restart", () => {
       grid.levelData = { level: this.gameSate, levelNumber: this.level };
+      PlaySound(ESounds.CLICK);
     });
+
+    const labelUI = new LevelLabel();
 
     // Renderizar estructura HTML del juego
     setHtml(
       this,
-      /*html*/ `<div class="df jc ai wi he">${backButton.render()}${restartButton.render()}<${
+      /*html*/ `<div class="df jc ai wi he">${backButton.render()}${labelUI.render()}${restartButton.render()}<${
         ROUTER_COMPONENT.GRID
       }></${ROUTER_COMPONENT.GRID}>${Alert.render()}</div>`
     );
@@ -65,6 +76,7 @@ class Game extends HTMLElement {
     // Cargar el nivel en el grid
     if (grid) {
       grid.levelData = { level: this.gameSate, levelNumber: this.level };
+      labelUI.updateLabel(this.level + 1);
     }
 
     /**
@@ -93,6 +105,9 @@ class Game extends HTMLElement {
             this.level = nextLevel;
             this.gameSate = getLevel(this.level);
             grid.levelData = { level: this.gameSate, levelNumber: this.level };
+            labelUI.updateLabel(this.level + 1);
+            // Se guarda el nivel que está actualmente seleccioando
+            savePropierties(LOCAL_STORAGE_KEY.SELECTED, nextLevel);
           } else {
             // Si no hay más niveles → volver al menú
             navigate();

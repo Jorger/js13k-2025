@@ -1,6 +1,5 @@
 //@ts-nocheck
-import { LOCAL_STORAGE_KEY } from "./constants";
-import { $, setHtml } from "./helpers";
+import { ESounds, LOCAL_STORAGE_KEY } from "./constants";
 import { getValueFromCache, savePropierties } from "./storage";
 
 let zzfx, zzfxV, zzfxX;
@@ -100,22 +99,36 @@ zzfxX = new AudioContext();
 
 let soundsEnabled = getValueFromCache(LOCAL_STORAGE_KEY.SOUNDS, true);
 
-const SOUNDS = {
-  gameOver: [, , 20, 0.04, , 0.6, , 1.31, , , -990, 0.06, 0.17, , , 0.04, 0.07],
-  shot: [, , 150, 0.05, , 0.05, , 1.3, , , , , , 3],
-  click: [, , 537, 0.02, 0.02, 0.22, 1, 1.59, -6.98, 4.97],
-  blocked: [, , 925, 0.04, 0.3, 0.6, 1, 0.3, , 6.27, -184, 0.09, 0.17],
-};
+// CLICK
+// SWIPE
+// COIN
+// EXPLODE
+// KEY
+// OPEN
+// DESTROY
+// SUCESS
+// GAME_OVER
 
-export const PlaySound = (type: keyof typeof SOUNDS) => {
+const SOUNDS = [
+  [, , 537, 0.02, 0.02, 0.22, 1, 1.59, -6.98, 4.97],
+  [, , 150, 0.05, , 0.05, , 1.3, , , , , , 3],
+  [, , 1675, , 0.06, 0.24, 1, 1.82, , , 837, 0.06],
+  [,,448,.01,.1,.3,3,.39,-0.5,,,,,,.2,.1,.08],
+  [, , 539, 0, 0.04, 0.29, 1, 1.92, , , 567, 0.02, 0.02, , , , 0.04],
+  [, , 20, 0.04, , 0.6, , 1.31, , , -990, 0.06, 0.17, , , 0.04, 0.07],
+  [, , 418, 0, 0.02, 0.2, 4, 1.15, -8.5, , , , , 0.7, , 0.1],
+  [, , 80, 0.3, 0.4, 0.7, 2, 0.1, -0.73, 3.42, -430, 0.09, 0.17, , , , 0.19],
+  [, , 925, 0.04, 0.3, 0.6, 1, 0.3, , 6.27, -184, 0.09, 0.17],
+];
+
+export const PlaySound = (sound: ESounds) => {
   if (soundsEnabled) {
-    zzfx(...SOUNDS[type]);
+    zzfx(...SOUNDS[sound]);
   }
 };
 
-// export const isSoundsEnabled = () => soundsEnabled;
-
-export const getLabelButtonSound = () => `Sound: ${soundsEnabled ? "ON" : "OFF"}`;
+export const getLabelButtonSound = () =>
+  `Sound: ${soundsEnabled ? "ON" : "OFF"}`;
 
 export const toogleSounds = (element: HTMLButtonElement) => {
   soundsEnabled = !soundsEnabled;

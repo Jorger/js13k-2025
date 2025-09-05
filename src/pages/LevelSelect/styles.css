@@ -1,20 +1,23 @@
 .pag-s {
-  /* border: 1px solid red; */
+  align-content: flex-end;
   flex-flow: wrap;
   gap: 10px;
-  row-gap: 15px;
-  align-content: flex-end;
   margin-top: 60px;
+  row-gap: 15px;
+}
 
-  .button {
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    padding: 20px;
-    text-shadow: none;
+.pag-s .button {
+  font-size: 20px;
+  height: 20px;
+  padding: 20px;
+  text-shadow: none;
+  width: 20px;
+}
 
-    &:disabled {
-      opacity: 0.5;
-    }
-  }
+.pag-s .button:disabled {
+  opacity: 0.5;
+}
+
+.pag-s .button.active {
+  background: #ff5722;
 }

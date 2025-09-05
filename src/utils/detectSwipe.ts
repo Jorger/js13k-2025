@@ -7,7 +7,7 @@ interface SwipeOptions {
 }
 
 export function detectSwipe(element: HTMLElement, options: SwipeOptions) {
-  const threshold = options.threshold ?? 30; // por defecto 50px
+  const threshold = options.threshold ?? 30; // por defecto 30px
   let startX = 0;
   let startY = 0;
   let isMouseDown = false;

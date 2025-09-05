@@ -10,6 +10,7 @@ export const CUSTOM_ROUTER_EVENT_NAME = "navigate";
 export const LOCAL_STORAGE_KEY = {
   LEVEL: "level",
   SOUNDS: "sounds",
+  SELECTED: "selected",
 };
 
 export const ROUTER_PAGE = {
@@ -55,6 +56,18 @@ export enum EDirections {
   DOWN,
   LEFT,
   RIGHT,
+}
+
+export enum ESounds {
+  CLICK,
+  SWIPE,
+  COIN,
+  EXPLODE,
+  KEY,
+  OPEN,
+  DESTROY,
+  SUCESS,
+  GAME_OVER
 }
 
 export const INCREASE_SWIPE = [

@@ -87,3 +87,14 @@ export function isValidNumber(value: number | string): boolean {
     !isNaN(value as any)
   );
 }
+
+export const shareLink = (data: ShareData) => {
+  if ("share" in navigator) {
+    navigator.share(data);
+  } else {
+    window.open(
+      `https://x.com/share?url=${encodeURIComponent(data.url || "")}`,
+      "_blank"
+    );
+  }
+};

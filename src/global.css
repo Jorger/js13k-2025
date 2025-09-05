@@ -7,6 +7,12 @@
 
 body,
 html {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body,
+html {
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -63,22 +69,15 @@ app-router {
 }
 
 .cat {
-  --pos: translate(var(--x), var(--y));
   height: var(--si, 70px);
   position: absolute;
   width: var(--si, 70px);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border: none;
-  transform: var(--pos);
-  /* animation: cat-blink 2s linear infinite; */
   /* Moverlo a una variable */
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-  /* box-shadow: -12px 11px 5px #00000087; */
-  /* z-index: 1; */
-
-  /* TODO revisar la velocidad */
 
   --b-cat: black;
   --o-cat: #f6ba00;

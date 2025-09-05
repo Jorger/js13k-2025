@@ -98,3 +98,9 @@ export const shareLink = (data: ShareData) => {
     );
   }
 };
+
+export function isFirefoxBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.includes("firefox") && !ua.includes("seamonkey");
+}

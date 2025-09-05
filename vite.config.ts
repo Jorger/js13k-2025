@@ -4,6 +4,7 @@ import * as singleFile from "vite-plugin-singlefile"; // v2.x exports as named
 
 // @ts-ignore
 export default defineConfig(({ command, mode }) => ({
+  base: "./",
   build: {
     target: "es2020",
     minify: "terser",

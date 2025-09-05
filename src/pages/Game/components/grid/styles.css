@@ -3,19 +3,13 @@
   border: 5px solid #000;
   position: relative;
   animation: scaleAndRotate 0.6s ease-out forwards;
-  /* Podria no dejarlo */
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
-    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 .tile {
   height: var(--si);
   position: absolute;
   width: var(--si);
-  /* z-index: 1; */
   pointer-events: none;
-
-  /* border: 1px solid red; */
 }
 
 .tile-0 {
@@ -23,63 +17,42 @@
   --c1: #c098ff;
   --c2: #9177e7;
   box-shadow: -12px 11px 5px rgba(0, 0, 0, 0.4);
-  /* background: var(--g), var(--g) var(--sg) var(--sg) var(--c2);
-  background-size: calc(2 * var(--sg)) calc(2 * var(--sg)); */
 }
 
 /* Coin */
-.tile-1,
-.tile-3 {
-  /* border-radius: 50%; */
+.tile-1::after,
+.tile-1::before,
+.tile-3::after,
+.tile-3::before {
+  content: "";
+  width: 70%;
+  height: 70%;
+  background: black;
+  left: 15%;
+  top: 15%;
+  position: absolute;
+  animation: spin 3s linear infinite;
+}
 
-  /* border: 2px solid black; */
-  /* background: #000; */
-  /* border: 1px solid white; */
-  /* border-radius: 50%; */
-  /* -webkit-transform-style: preserve-3d; */
-  /* animation-direction: reverse; */
-  
+.tile-1::after,
+.tile-3::after {
+  background: #f5c101;
+  width: 50%;
+  height: 50%;
+  left: 25%;
+  top: 25%;
 
+  background-image: linear-gradient(#feec01, #feec01),
+    linear-gradient(#fefeaa, #fefeaa), linear-gradient(#fefeaa, #fefeaa),
+    linear-gradient(#feec01, #feec01), linear-gradient(#feec01, #feec01);
+  background-repeat: no-repeat;
+  background-size: 25% 75%, 100% 25%, 25% 100%, 50% 25%, 75% 25%;
+  background-position: 0 0, 25% 0, 100% 0, 0 75%, 75% 100%;
+}
 
-  /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; */
-
-  &::after,
-  &::before {
-    content: "";
-    width: 70%;
-    height: 70%;
-    background: black;
-    left: 15%;
-    top: 15%;
-    position: absolute;
-    animation: spin 3s linear infinite;
-    /* transform: rotateY(-10deg);
-    transform-origin: 100% 50%; */
-  }
-
-  &::after {
-    background: #f5c101;
-    width: 50%;
-    height: 50%;
-    left: 25%;
-    top: 25%;
-
-    background-image: linear-gradient(#feec01, #feec01),
-      linear-gradient(#fefeaa, #fefeaa), linear-gradient(#fefeaa, #fefeaa),
-      linear-gradient(#feec01, #feec01), linear-gradient(#feec01, #feec01);
-    background-repeat: no-repeat;
-    background-size: 25% 75%, 100% 25%, 25% 100%, 50% 25%, 75% 25%;
-    background-position: 0 0, 25% 0, 100% 0, 0 75%, 75% 100%;
-
-    /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
-      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
-      rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
-  }
-
-  &::before {
-    /* border-radius: 5px; */
-    box-shadow: -12px 11px 5px #00000087;
-  }
+.tile-1::before,
+.tile-3::before {
+  box-shadow: -12px 11px 5px #00000087;
 }
 
 /* SPIKE */
@@ -96,11 +69,10 @@
     85% 80%, 85% 90%;
 }
 
-.tile-1.coin, 
+.tile-1.coin,
 .tile-3.coin {
-  /* border: 2px solid black; */
-   animation: coinPickup 0.5s ease-out forwards;
-   animation-delay: var(--s, 0);
+  animation: coinPickup 0.5s ease-out forwards;
+  animation-delay: var(--s, 0);
 }
 
 /* Key */
@@ -112,12 +84,16 @@
 .tile-4 {
   background: #242026;
 
-  background-image: linear-gradient(#fffdff, #fffdff), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026), linear-gradient(#242026, #242026),
-  linear-gradient(#009dff, #009dff),
-    linear-gradient(#00cefb, #00cefb), linear-gradient(#0076ed, #0076ed), linear-gradient(#049dff, #049dff);
+  background-image: linear-gradient(#fffdff, #fffdff),
+    linear-gradient(#242026, #242026), linear-gradient(#242026, #242026),
+    linear-gradient(#242026, #242026), linear-gradient(#242026, #242026),
+    linear-gradient(#009dff, #009dff), linear-gradient(#00cefb, #00cefb),
+    linear-gradient(#0076ed, #0076ed), linear-gradient(#049dff, #049dff);
   background-repeat: no-repeat;
-  background-size: 15% 15%, 40% 13%, 40% 13%, 13% 50%, 13% 50%, 35% 35%, 35% 35%, 35% 35%, 35% 35%;
-  background-position: 85% 15%, 50% 25%, 50% 70%, 32% 45%, 68% 45%, 24% 20%, 78% 20%, 24% 73%, 78% 73%;
+  background-size: 15% 15%, 40% 13%, 40% 13%, 13% 50%, 13% 50%, 35% 35%, 35% 35%,
+    35% 35%, 35% 35%;
+  background-position: 85% 15%, 50% 25%, 50% 70%, 32% 45%, 68% 45%, 24% 20%,
+    78% 20%, 24% 73%, 78% 73%;
   box-shadow: -12px 11px 5px rgba(0, 0, 0, 0.4);
 }
 
@@ -126,38 +102,34 @@
 }
 
 /* Box */
-.tile-5 {
-  /* border: 1px solid red; */
-
-  &::after,
-  &::before {
-    content: "";
-    background-color: #fee4c9;
-    width: 80%;
-    height: 80%;
-    position: absolute;
-    left: 10%;
-    top: 10%;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+.tile-5::after,
+.tile-5::before {
+  content: "";
+  background-color: #fee4c9;
+  width: 80%;
+  height: 80%;
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-    background-image: linear-gradient(#fec2b1, #fec2b1);
-    background-repeat: no-repeat;
-    background-size: 60% 60%;
-    background-position: 0 100%;
-  }
+  background-image: linear-gradient(#fec2b1, #fec2b1);
+  background-repeat: no-repeat;
+  background-size: 60% 60%;
+  background-position: 0 100%;
+}
 
-  &::after {
-    background-color: #eaa0a2;
-    width: 60%;
-    height: 55%;
-    left: 20%;
-    top: 20%;
-    box-shadow:none;
-    background-image: linear-gradient(#b9687b, #b9687b), linear-gradient(#b9687b, #b9687b), linear-gradient(#b9687b, #b9687b);
-    background-size: 25% 25%;
-    background-position: 0 0, 100% 0, 100% 100%;
-  }
-  /* background: red; */
+.tile-5::after {
+  background-color: #eaa0a2;
+  width: 60%;
+  height: 55%;
+  left: 20%;
+  top: 20%;
+  box-shadow: none;
+  background-image: linear-gradient(#b9687b, #b9687b),
+    linear-gradient(#b9687b, #b9687b), linear-gradient(#b9687b, #b9687b);
+  background-size: 25% 25%;
+  background-position: 0 0, 100% 0, 100% 100%;
 }
 
 .cat.ani {
@@ -219,11 +191,10 @@
   }
 }
 
-/* Definición de la animación */
 @keyframes scaleAndRotate {
   0% {
     transform: scale(1.2) rotate(10deg);
-    opacity: 0; /* opcional: se desvanece al aparecer */
+    opacity: 0;
   }
   100% {
     transform: scale(1) rotate(0deg);

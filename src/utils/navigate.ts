@@ -1,4 +1,4 @@
-import { CUSTOM_ROUTER_EVENT_NAME, ROUTER_PAGE } from "./constants";
+import { CUSTOM_ROUTER_EVENT_NAME, ESounds, ROUTER_PAGE } from "./constants";
 import { PlaySound } from "./sounds";
 
 export const navigate = (
@@ -7,7 +7,7 @@ export const navigate = (
 ) => {
   const detail = { page, params };
 
-  PlaySound("click");
+  PlaySound(ESounds.CLICK);
 
   window.dispatchEvent(
     new CustomEvent(CUSTOM_ROUTER_EVENT_NAME, {

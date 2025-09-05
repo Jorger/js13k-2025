@@ -1,8 +1,18 @@
 import "./styles.css";
 import { $on, qs, qsa, setHtml } from "../../utils/helpers";
-import { EVENT_TYPE, ROUTER_COMPONENT, ROUTER_PAGE } from "../../utils/constants";
-import { getCurrentLevelFromCache, getTotalLevels } from "../../levels";
 import { navigate } from "../../utils/navigate";
+import { savePropierties } from "../../utils/storage";
+import {
+  EVENT_TYPE,
+  LOCAL_STORAGE_KEY,
+  ROUTER_COMPONENT,
+  ROUTER_PAGE,
+} from "../../utils/constants";
+import {
+  getCurrentLevelFromCache,
+  getSelectedLevel,
+  getTotalLevels,
+} from "../../levels";
 import ButtonGame from "../../components/button";
 import template from "./template.html?raw";
 
@@ -15,6 +25,7 @@ const TOTAL_LEVELS = getTotalLevels();
  */
 class LevelSelect extends HTMLElement {
   private completedLevel = 0;
+  private selectedLevel = 0;
 
   connectedCallback() {
     // Renderiza el template base
@@ -22,6 +33,9 @@ class LevelSelect extends HTMLElement {
 
     // El número dle nivel que ya se ha completado...
     this.completedLevel = getCurrentLevelFromCache();
+
+    // El nivel que se ha seleccionado actualmemte...
+    this.selectedLevel = getSelectedLevel();
 
     // Contenedor donde van los botones de niveles
     const container = qs(this, ".pag-s") as HTMLElement;
@@ -37,10 +51,11 @@ class LevelSelect extends HTMLElement {
       const numLevel = +button.textContent!;
 
       if (numLevel - 1 <= this.completedLevel) {
-        $on(button as HTMLElement, EVENT_TYPE.CLICK, () =>
+        $on(button as HTMLElement, EVENT_TYPE.CLICK, () => {
           // Se navega a la página del juego pasando el índice del nivel
-          navigate(ROUTER_PAGE.GAME, { level: numLevel - 1 })
-        );
+          savePropierties(LOCAL_STORAGE_KEY.SELECTED, numLevel - 1);
+          navigate(ROUTER_PAGE.GAME, { level: numLevel - 1 });
+        });
       }
     });
 
@@ -66,9 +81,11 @@ class LevelSelect extends HTMLElement {
       .fill(null)
       .map(
         (_, index) =>
-          /*html*/ `<button class="button df jc ai" ${
-            index > this.completedLevel ? "disabled" : ""
-          }>${index + 1}</button>`
+          /*html*/ `<button class="button df jc ai ${
+            this.selectedLevel === index ? "active" : ""
+          }" ${index > this.completedLevel ? "disabled" : ""}>${
+            index + 1
+          }</button>`
       )
       .join("");
   }

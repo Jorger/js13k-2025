@@ -131,7 +131,6 @@ app-router {
   --o-cat: black;
 }
 
-
 .button {
   background: #246ff9;
   /* min-width: 150px; */
@@ -143,7 +142,8 @@ app-router {
   text-shadow: 1px 5px 1px #00000063;
   cursor: pointer;
   /* Ponerlo en una variable de css */
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 .pag {
@@ -155,7 +155,7 @@ app-router {
   width: calc(var(--bw) - 100px);
   height: calc(var(--bh) - 100px);
   background: #503c6f;
-  box-shadow: inset -12px 9px 3.2px rgba(0, 0, 0, .15);
+  box-shadow: inset -12px 9px 3.2px rgba(0, 0, 0, 0.15);
   flex-direction: column;
 }
 

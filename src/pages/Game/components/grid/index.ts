@@ -1,5 +1,6 @@
 import "./styles.css";
 import { detectSwipe } from "../../../../utils/detectSwipe";
+import { PlaySound } from "../../../../utils/sounds";
 import { saveLevelCache } from "../../../../levels";
 import {
   addClass,
@@ -15,6 +16,7 @@ import {
   CAT_SPEED,
   ECatColor,
   EDirections,
+  ESounds,
   ETiles,
   HANDLE_GRID_ACTION,
   ROUTER_COMPONENT,
@@ -25,7 +27,8 @@ import {
   validateMoveCat,
   valiteCollectAllKeys,
 } from "./helpers";
-import {
+import Alert from "../../../../components/alert";
+import type {
   Cat,
   CatElemet,
   GridActionDetail,
@@ -34,8 +37,6 @@ import {
   TCatColor,
   Tiles,
 } from "../../../../interfaces";
-import Alert from "../../../../components/alert";
-import { PlaySound } from "../../../../utils/sounds";
 
 const BASE_CLASS = "cat";
 const CAT_BLACK_CLASS = `.${BASE_CLASS}-black`;
@@ -97,6 +98,8 @@ class GridGame extends HTMLElement {
       collected: 0,
     };
 
+    this.collectAllKeys = false;
+
     const width = this.level.width * this.size;
     const height = this.level.height * this.size;
 
@@ -151,7 +154,7 @@ class GridGame extends HTMLElement {
     [
       ...getTileByType(ETiles.COIN, this.level.tiles),
       ...getTileByType(ETiles.KEYS, this.level.tiles),
-    ].forEach((tile) => {
+    ].forEach(async (tile) => {
       const element = qs(
         this,
         `${BASE_TILE_CLASS}${tile.position.x}-${tile.position.y}`
@@ -169,8 +172,8 @@ class GridGame extends HTMLElement {
           this.boardKeys.collected++;
         }
 
-        // await delay(delayAnimation);
-        // PlaySound("shot");
+        await delay(delayAnimation);
+        PlaySound(tile.type === ETiles.COIN ? ESounds.COIN : ESounds.KEY);
       }
     });
   }
@@ -189,6 +192,7 @@ class GridGame extends HTMLElement {
 
       if (tile.hide && !hasClass(element, CLASS_NAMES.EXPLODE)) {
         addClass(element, CLASS_NAMES.EXPLODE);
+        PlaySound(ESounds.DESTROY);
       }
     });
   }
@@ -211,6 +215,7 @@ class GridGame extends HTMLElement {
 
         if (!hasClass(element, CLASS_NAMES.OPEN)) {
           addClass(element, CLASS_NAMES.OPEN);
+          PlaySound(ESounds.OPEN);
         }
       });
     }
@@ -234,6 +239,7 @@ class GridGame extends HTMLElement {
      */
     if (!cat) return;
 
+    PlaySound(ESounds.SWIPE);
     this.disabledCats(true);
     this.updateCoins();
 
@@ -257,10 +263,12 @@ class GridGame extends HTMLElement {
     if (cat.destroy && !this.collectAllCoins()) {
       // GAME OVER: el gato fue destruido
       addClass(catElemet, CLASS_NAMES.EXPLODE);
+      PlaySound(ESounds.EXPLODE);
 
       // Mostrar la ventana de game over...
       await delay(300);
       this.showModal(true);
+      PlaySound(ESounds.GAME_OVER);
     } else {
       this.disabledCats(false);
     }
@@ -281,6 +289,7 @@ class GridGame extends HTMLElement {
 
       await delay(200);
       this.showModal();
+      PlaySound(ESounds.SUCESS);
     }
   }
 

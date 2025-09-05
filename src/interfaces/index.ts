@@ -1,8 +1,6 @@
 import { ECatColor, ETiles } from "../utils/constants";
 
 export type TCatColor = keyof typeof ECatColor;
-// export type SwipeDirection = keyof typeof EDirections;
-// export type TETiles = keyof typeof ETiles;
 
 export interface coordinate {
   x: number;
@@ -16,8 +14,6 @@ export interface Cat {
 }
 
 export type CatElemet = Record<TCatColor, HTMLButtonElement | null>;
-
-// export type IIncreaseValue = Record<SwipeDirection, coordinate>;
 
 export interface Tiles {
   type: ETiles;

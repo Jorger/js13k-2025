@@ -132,8 +132,22 @@
   background-position: 0 0, 100% 0, 100% 100%;
 }
 
-.cat.ani {
+.gg.normal .cat {
+  --pos: translate(var(--x), var(--y));
+  transform: var(--pos);
+}
+
+.gg.firefox .cat {
+  left: var(--x);
+  top: var(--y);
+}
+
+.gg.normal .cat.ani {
   transition: transform var(--s, 100ms) ease-in-out;
+}
+
+.gg.firefox .cat.ani {
+  transition: left var(--s, 100ms) ease-in-out, top var(--s, 100ms) ease-in-out;
 }
 
 .cat.explode,

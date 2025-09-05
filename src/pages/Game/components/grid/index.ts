@@ -6,6 +6,7 @@ import {
   addClass,
   delay,
   hasClass,
+  isFirefoxBrowser,
   qs,
   removeClass,
   setCssVariable,
@@ -66,6 +67,7 @@ class GridGame extends HTMLElement {
   // Flag para saber si ya se recogieron todas las llaves
   private collectAllKeys: boolean = false;
   private levelNumber: number = 0;
+  private isFirefox = false;
 
   // Setter para recibir los datos del nivel desde afuera
   set levelData(value: { level: Level; levelNumber: number }) {
@@ -83,6 +85,8 @@ class GridGame extends HTMLElement {
    */
   private render() {
     if (!this.level) return;
+
+    this.isFirefox = isFirefoxBrowser();
 
     // Calcula el tamaño en base al ancho del nivel
     this.size = Math.round(BASE_WIDTH_TILE / this.level.width);
@@ -344,7 +348,9 @@ class GridGame extends HTMLElement {
   renderGrid(width = 0, height = 0) {
     if (!this.level) return "";
 
-    return /*html*/ `<div class="gg bri" style="--si:${
+    return /*html*/ `<div class="gg bri ${
+      this.isFirefox ? "firefox" : "normal"
+    }" style="--si:${
       this.size
     }px;width:${width}px;height:${height}px">${this.renderTiles(
       this.level.tiles

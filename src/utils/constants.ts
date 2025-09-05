@@ -67,7 +67,7 @@ export enum ESounds {
   OPEN,
   DESTROY,
   SUCESS,
-  GAME_OVER
+  GAME_OVER,
 }
 
 export const INCREASE_SWIPE = [
